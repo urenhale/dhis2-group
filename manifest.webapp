@@ -1,0 +1,21 @@
+{
+	"version": "0.1",
+	"name": "Map",
+	"description": "Map is an example app of a more interactive map",
+	"launch_path": "/index.html",
+	"icons": {
+		       "16": "/img/icons/mortar-16.png",
+		       "48": "/img/icons/mortar-48.png",
+        	       "128": "/img/icons/mortar-128.png"
+	},
+	"developer": {
+		     "name": "group",
+		     "url": "https://wiki.uio.no/mn/ifi/inf5750/index.php/Group"
+	},
+	"default_locale": "en",
+	"activities": {
+		      "dhis": {
+		      	      "href": ".."
+		      }
+	}
+}
