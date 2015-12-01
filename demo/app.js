@@ -1,3 +1,4 @@
+// MAP
 $(function () {
 
     // Prepare demo data
@@ -445,4 +446,25 @@ $(function () {
 
         }]
     });
+});
+
+
+// Slider
+
+$(function() {
+
+    var minDate = new Date(2009, 0, 1),
+        maxDate = new Date();
+
+    $('#slider').dateRangeSlider(
+
+        {
+            bounds: {
+                min: minDate,
+                max: maxDate
+            }
+        }
+
+    );
+
 });
