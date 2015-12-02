@@ -7,10 +7,12 @@
   </head>
   <body>
     <div id="container"></div>
+
     <script type="text/javascript" src="scripts/jquery-2.1.4.min.js"></script>
     <script type="text/javascript" src="https://code.highcharts.com/maps/highmaps.js"></script>
     <script type="text/javascript" src="https://code.highcharts.com/maps/modules/exporting.js"></script>
     <script type="text/javascript" src="https://code.highcharts.com/mapdata/countries/sl/sl-all.js"></script>
     <script type="text/javascript" src="scripts/map.js"></script>
+    
   </body>
 </html>
