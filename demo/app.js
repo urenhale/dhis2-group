@@ -540,7 +540,13 @@ $(function () {
 
 // Slider
 
-$("#slider").dateRangeSlider();
+$("#slider").dateRangeSlider({
+
+    step: {
+        months: 1
+    }
+
+});
 /*
 $(function() {
 
