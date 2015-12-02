@@ -332,7 +332,7 @@ $(function () {
             data : data,
             mapData: Highcharts.maps['custom/africa'],
             joinBy: 'hc-key',
-            name: 'Random data',
+            name: 'Africa',
             states: {
                 hover: {
                     color: '#BADA55'
@@ -540,6 +540,8 @@ $(function () {
 
 // Slider
 
+$("#slider").dateRangeSlider();
+/*
 $(function() {
 
     var minDate = new Date(2009, 0, 1),
@@ -558,3 +560,5 @@ $(function() {
     );
 
 });
+
+*/
