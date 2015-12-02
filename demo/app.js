@@ -233,8 +233,74 @@ $(function () {
         }
     ];
 
+
+    // Set drilldown pointers
+    $.each(data, function (i) {
+        this.drilldown = this['hc-key'];
+        this.value = this['value'];
+    });
+
+
     // Initiate the chart
     $('#map').highcharts('Map', {
+
+        chart : {
+            events: {
+                drilldown: function (e) {
+
+                    if (!e.seriesOptions) {
+
+                        console.log(e.point.drilldown);
+
+                        var chart = this,
+                            countryCode = e.point.drilldown,
+                            mapKey = 'countries/'+countryCode+'/' + countryCode + '-all',
+                            // Handle error, the timeout is cleared on success
+                            fail = setTimeout(function () {
+                                if (!Highcharts.maps[mapKey]) {
+                                    chart.showLoading('<i class="icon-frown"></i> Failed loading ' + e.point.name);
+
+                                    fail = setTimeout(function () {
+                                        chart.hideLoading();
+                                    }, 1000);
+                                }
+                            }, 3000);
+
+                        // Show the spinner
+                        chart.showLoading('<i class="icon-spinner icon-spin icon-3x"></i>'); // Font Awesome spinner
+
+                        // Load the drilldown map
+                        $.getScript('https://code.highcharts.com/mapdata/' + mapKey + '.js', function () {
+
+                            data = Highcharts.geojson(Highcharts.maps[mapKey]);
+
+                            // Set a non-random bogus value
+                            $.each(data, function (i) {
+                                this.value = i;
+                            });
+
+                            // Hide loading and add series
+                            chart.hideLoading();
+                            clearTimeout(fail);
+                            chart.addSeriesAsDrilldown(e.point, {
+                                name: e.point.name,
+                                data: data,
+                                dataLabels: {
+                                    enabled: true,
+                                    format: '{point.name}'
+                                }
+                            });
+                        });
+                    }
+
+
+                    this.setTitle(null, { text: e.point.name });
+                },
+                drillup: function () {
+                    this.setTitle(null, { text: 'USA' });
+                }
+            }
+        },
 
         title : {
             text : 'Countries of Africa'
@@ -255,6 +321,13 @@ $(function () {
             min: 0
         },
 
+        mapNavigation: {
+            enabled: true,
+            buttonOptions: {
+                verticalAlign: 'bottom'
+            }
+        },
+
         series : [{
             data : data,
             mapData: Highcharts.maps['custom/africa'],
@@ -269,7 +342,23 @@ $(function () {
                 enabled: true,
                 format: '{point.name}'
             }
-        }]
+        }],
+
+        drilldown: {
+            //series: drilldownSeries,
+            activeDataLabelStyle: {
+                color: '#FFFFFF',
+                textDecoration: 'none',
+                textShadow: '0 0 3px #000000'
+            },
+            drillUpButton: {
+                relativeTo: 'spacingBox',
+                position: {
+                    x: 0,
+                    y: 60
+                }
+            }
+        }
     });
 });
 
@@ -462,7 +551,8 @@ $(function() {
             bounds: {
                 min: minDate,
                 max: maxDate
-            }
+            },
+            arrows: false
         }
 
     );
