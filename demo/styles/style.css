@@ -17,13 +17,8 @@
     float: right;
 }
 
-
 #map {
     height: 100%;
-}
-
-#slider {
-    width: 100%;
 }
 
 #pie {
@@ -37,6 +32,16 @@
 #bar {
     height: 30%;
 }
+
+#bottom {
+    text-align: center;
+}
+
+#slider {
+    width: 90%;
+    margin: 0 auto;
+}
+
 
 .loading {
     margin-top: 10em;
