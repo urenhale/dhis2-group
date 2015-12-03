@@ -295,7 +295,7 @@ $(function () {
 
                         // At this point the country code and mapkey has been determined.
                         // Will use the country code and send it to the functionality that handles chart update!
-                        dashboard.updatePie(countryCode);
+                        dashboard.updateLocation(countryCode);
 
                         // Show the spinner
                         chart.showLoading('<i class="icon-spinner icon-spin icon-3x"></i>'); // Font Awesome spinner
@@ -409,6 +409,53 @@ function Dashboard () {
 }
 
 /**
+ * Function that takes country code and returns data for the country (or region amirite)
+ *
+ * BUT! As we do not have the data for any other country than Sierra Leone, we will shortcut that process.
+**/
+Dashboard.prototype.getData = function (countryCode) {
+
+    var fakeData = [{
+                name: '123',
+                y: 56.33
+            }, {
+                name: 'Swi321ne Flu',
+                y: 24.03,
+                sliced: true,
+                selected: true
+            }, {
+                name: 'Ebola',
+                y: 10.38
+            }, {
+                name: 'Aids',
+                y: 4.77
+            }, {
+                name: 'Cancer',
+                y: 0.91
+            }, {
+                name: 'Unknown',
+                y: 0.2
+            }];
+
+
+    console.log("Hello I want to be an AJAX call when I grow up.");
+
+    return fakeData;
+
+}
+
+/**
+ *  function that updates aaaaall the charts based on location
+**/
+Dashboard.prototype.updateLocation = function (countryCode) {
+
+    var data = this.getData(countryCode);
+
+    this.updatePie(data);
+
+}
+
+/**
  *  Function that handles pie chart
 **/
 Dashboard.prototype.createPie = function () {
@@ -470,36 +517,13 @@ Dashboard.prototype.createPie = function () {
 /**
  *  updatePie
 **/
-Dashboard.prototype.updatePie = function (countryCode) {
+Dashboard.prototype.updatePie = function (data) {
 
-    var fakeData = [{
-                name: '123',
-                y: 56.33
-            }, {
-                name: 'Swi321ne Flu',
-                y: 24.03,
-                sliced: true,
-                selected: true
-            }, {
-                name: 'Ebola',
-                y: 10.38
-            }, {
-                name: 'Aids',
-                y: 4.77
-            }, {
-                name: 'Cancer',
-                y: 0.91
-            }, {
-                name: 'Unknown',
-                y: 0.2
-            }];
+    console.log("the following data has been received");
+    console.log(data);
 
-    console.log("The countryCode received is: " + countryCode);
-
-
-
-    // This is where the magic happens.
-    this.pie.series[0].setData(fakeData);
+    // Step Two, set (and redraw chart) new data to chart.
+    this.pie.series[0].setData(data);
 }
 
 // LINE
