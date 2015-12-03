@@ -297,7 +297,7 @@ $(function () {
                     this.setTitle(null, { text: e.point.name });
                 },
                 drillup: function () {
-                    this.setTitle(null, { text: 'USA' });
+                    this.setTitle(null, { text: 'Africa' });
                 }
             }
         },

@@ -17,6 +17,12 @@
     float: right;
 }
 
+#center {
+    margin-top: 0.5em;
+    text-align: center;
+    color: gray;
+}
+
 #map {
     height: 100%;
 }
