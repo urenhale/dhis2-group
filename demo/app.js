@@ -538,33 +538,73 @@ $(function () {
 });
 
 
-// Slider
+/**
+ *  The Slider functionality.
+ *
+ *  This feature will control the time dimension of the data displayed.
+ *
+ *
+**/
+(function() {
 
-$("#slider").dateRangeSlider({
+    var months = [  "Jan", "Feb", "Mar",
+                    "Apr", "May", "Jun",
+                    "Jul", "Aug", "Sept",
+                    "Oct", "Nov", "Dec"],
 
-    step: {
-        months: 1
-    }
+        /**
+         *  Functionality for rounding down to last complete month.
+         *  This makes it so that the slider scale is not assymetrical.
+         *  Waste of time to create but it annoyed me.
+        **/
+        lastFinalMonthDate = (function() {
 
-});
-/*
-$(function() {
+            var month = new Date().getMonth(),
+                year = (new Date().getYear() + 1900);
 
-    var minDate = new Date(2009, 0, 1),
-        maxDate = new Date();
+            return new Date(year, month, 1);
 
-    $('#slider').dateRangeSlider(
+        })();
 
-        {
-            bounds: {
-                min: minDate,
-                max: maxDate
+
+    $("#slider").dateRangeSlider({
+
+        arrows: false,
+
+        step: {
+            months: 1
+        },
+
+        bounds: {
+            min: new Date(2014, 0, 1),
+            max: lastFinalMonthDate
+        },
+
+        defaultValues: {
+            min: new Date(2014, 5, 1),
+            max: new Date(2015, 5, 1)
+        },
+
+        scales: [{
+            first: function(value){ return value; },
+
+            end: function(value) {return value; },
+
+            next: function(value){
+                var next = new Date(value);
+                return new Date(next.setMonth(value.getMonth() + 1));
             },
-            arrows: false
-        }
 
-    );
+            label: function(value){
+                return months[value.getMonth()];
+            },
 
-});
+            format: function(tickContainer, tickStart, tickEnd){
+                tickContainer.addClass("myCustomClass");
+            }
+        }]
 
-*/
+    });
+
+})();
+
