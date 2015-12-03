@@ -295,7 +295,7 @@ $(function () {
 
                         // At this point the country code and mapkey has been determined.
                         // Will use the country code and send it to the functionality that handles chart update!
-                        dashboard.updateLocation(countryCode);
+                        dashboard.updateCountry(countryCode);
 
                         // Show the spinner
                         chart.showLoading('<i class="icon-spinner icon-spin icon-3x"></i>'); // Font Awesome spinner
@@ -316,6 +316,22 @@ $(function () {
                             chart.addSeriesAsDrilldown(e.point, {
                                 name: e.point.name,
                                 data: data,
+                                allowPointSelect: true,
+                                cursor: 'pointer',
+                                states: {
+                                    select: {
+                                        color: '#a4edba',
+                                        borderColor: 'black',
+                                        dashStyle: 'shortdot'
+                                    }
+                                },
+                                point: {
+                                    events: {
+                                        click: function() {
+                                            dashboard.updateDistrict(this.name);
+                                        }
+                                    }
+                                },
                                 dataLabels: {
                                     enabled: true,
                                     format: '{point.name}'
@@ -332,6 +348,10 @@ $(function () {
 
                     // Drilled up and loaded what? nothing?
                     console.log("Drilled up, update charts?!")
+
+                    // "reset" countrycode.
+                    dashboard = null;
+
                 }
             }
         },
@@ -406,6 +426,10 @@ function Dashboard () {
     this.pie = this.createPie().highcharts();
     this.line = null;
     this.bar = null;
+
+
+    // Current countryCode (if any);
+    this.countryCode = null;
 }
 
 /**
@@ -413,13 +437,18 @@ function Dashboard () {
  *
  * BUT! As we do not have the data for any other country than Sierra Leone, we will shortcut that process.
 **/
-Dashboard.prototype.getData = function (countryCode) {
+Dashboard.prototype.getData = function (countryCode, district) {
+
+    if (district == null) {
+
+        district = "swin3flu3";
+    }
 
     var fakeData = [{
-                name: '123',
+                name: countryCode,
                 y: 56.33
             }, {
-                name: 'Swi321ne Flu',
+                name: district,
                 y: 24.03,
                 sliced: true,
                 selected: true
@@ -445,15 +474,30 @@ Dashboard.prototype.getData = function (countryCode) {
 }
 
 /**
- *  function that updates aaaaall the charts based on location
+ *  function that updates aaaaall the charts based on country
 **/
-Dashboard.prototype.updateLocation = function (countryCode) {
+Dashboard.prototype.updateCountry = function (countryCode) {
+
+    this.countryCode = countryCode;
 
     var data = this.getData(countryCode);
 
     this.updatePie(data);
 
 }
+
+/**
+ *  function that updates data relevant to district shit!
+ * probably time to overlad.com
+**/
+Dashboard.prototype.updateDistrict = function (district) {
+
+    var data = this.getData(this.countryCode, district);
+
+    this.updatePie(data);
+
+}
+
 
 /**
  *  Function that handles pie chart
