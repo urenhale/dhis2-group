@@ -1,7 +1,25 @@
-// MAP
+
+
+/**
+ * Shorthand function for $(document).ready().
+ *
+ * Function is invoked once document is marked as ready by browser.
+**/
+
 $(function () {
 
-    // Prepare demo data
+    var dashboard = new Dashboard();
+
+
+    /**
+     *  All the shit beneath this line is essentially legacy shit.
+    **/
+
+
+    // Preparing demo data.
+    // The value properties within the following object could possibly serve as another dimension
+    // of data display. Currently it is only a way to differentiate the colors of the countries.
+    //
     var data = [
         {
             "hc-key": "ug",
@@ -233,6 +251,15 @@ $(function () {
         }
     ];
 
+/**
+ *  The Map will mainly serve as a way to navigate / select countries and districts.
+ *
+ *  Once a country or district is selected, the graphs on the right hand side (pie, line and bar)
+ *  Should be updated.
+ *
+ *  The Search Box should have the same functionality but intergrated with Map so that the Map
+ *  updates on what country have been searched / selected through the Search Box.
+**/
 
     // Set drilldown pointers
     $.each(data, function (i) {
@@ -250,11 +277,10 @@ $(function () {
 
                     if (!e.seriesOptions) {
 
-                        console.log(e.point.drilldown);
-
                         var chart = this,
                             countryCode = e.point.drilldown,
                             mapKey = 'countries/'+countryCode+'/' + countryCode + '-all',
+
                             // Handle error, the timeout is cleared on success
                             fail = setTimeout(function () {
                                 if (!Highcharts.maps[mapKey]) {
@@ -265,6 +291,11 @@ $(function () {
                                     }, 1000);
                                 }
                             }, 3000);
+
+
+                        // At this point the country code and mapkey has been determined.
+                        // Will use the country code and send it to the functionality that handles chart update!
+                        dashboard.updatePie(countryCode);
 
                         // Show the spinner
                         chart.showLoading('<i class="icon-spinner icon-spin icon-3x"></i>'); // Font Awesome spinner
@@ -291,13 +322,16 @@ $(function () {
                                 }
                             });
                         });
+                    
                     }
-
 
                     this.setTitle(null, { text: e.point.name });
                 },
                 drillup: function () {
-                    this.setTitle(null, { text: 'USA' });
+                    this.setTitle(null, { text: 'Africa' });
+
+                    // Drilled up and loaded what? nothing?
+                    console.log("Drilled up, update charts?!")
                 }
             }
         },
@@ -362,9 +396,24 @@ $(function () {
     });
 });
 
-// PIE
-$(function () {
-    $('#pie').highcharts({
+/**
+ *  Main object controlling charts & information.  
+ *
+ *
+**/
+function Dashboard () {
+
+    this.pie = this.createPie().highcharts();
+    this.line = null;
+    this.bar = null;
+}
+
+/**
+ *  Function that handles pie chart
+**/
+Dashboard.prototype.createPie = function () {
+
+    return $('#pie').highcharts({
         chart: {
             plotBackgroundColor: null,
             plotBorderWidth: null,
@@ -416,7 +465,42 @@ $(function () {
             }]
         }]
     });
-});
+}
+
+/**
+ *  updatePie
+**/
+Dashboard.prototype.updatePie = function (countryCode) {
+
+    var fakeData = [{
+                name: '123',
+                y: 56.33
+            }, {
+                name: 'Swi321ne Flu',
+                y: 24.03,
+                sliced: true,
+                selected: true
+            }, {
+                name: 'Ebola',
+                y: 10.38
+            }, {
+                name: 'Aids',
+                y: 4.77
+            }, {
+                name: 'Cancer',
+                y: 0.91
+            }, {
+                name: 'Unknown',
+                y: 0.2
+            }];
+
+    console.log("The countryCode received is: " + countryCode);
+
+
+
+    // This is where the magic happens.
+    this.pie.series[0].setData(fakeData);
+}
 
 // LINE
 $(function () {
