@@ -1,0 +1,1 @@
+{"headers":[{"name":"jp826jAJHUc","column":"Diagnosis","type":"java.lang.String","hidden":false,"meta":true},{"name":"pe","column":"Period","type":"java.lang.String","hidden":false,"meta":true},{"name":"value","column":"Value","type":"java.lang.Double","hidden":false,"meta":false}],"rows":[],"width":0,"height":0}
