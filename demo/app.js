@@ -414,6 +414,88 @@ $(function () {
             }
         }
     });
+
+
+/**
+ *  The Slider functionality.
+ *
+ *  This feature will control the time dimension of the data displayed.
+ *
+ *
+**/
+    var months = [  "Jan", "Feb", "Mar",
+                    "Apr", "May", "Jun",
+                    "Jul", "Aug", "Sept",
+                    "Oct", "Nov", "Dec"],
+
+        /**
+         *  Functionality for rounding down to last complete month.
+         *  This makes it so that the slider scale is not assymetrical.
+         *  Waste of time to create but it annoyed me.
+        **/
+        lastFinalMonthDate = (function() {
+
+            var month = new Date().getMonth(),
+                year = (new Date().getYear() + 1900);
+
+            return new Date(year, month, 1);
+
+        })();
+
+    /**
+     *  This is where the rangeslider is created.
+     *
+    **/
+    $("#slider").dateRangeSlider({
+
+        arrows: false,
+
+        step: {
+            months: 1
+        },
+
+        bounds: {
+            min: new Date(2014, 0, 1),
+            max: lastFinalMonthDate
+        },
+
+        defaultValues: {
+            min: new Date(2014, 5, 1),
+            max: new Date(2015, 5, 1)
+        },
+
+        scales: [{
+            first: function(value){ return value; },
+
+            end: function(value) {return value; },
+
+            next: function(value){
+                var next = new Date(value);
+                return new Date(next.setMonth(value.getMonth() + 1));
+            },
+
+            label: function(value){
+                return months[value.getMonth()];
+            },
+
+            format: function(tickContainer, tickStart, tickEnd){
+                tickContainer.addClass("myCustomClass");
+            }
+        }]
+
+    });
+
+    /**
+     *  Functionality for when the values have changed.
+     *
+     *  Extracting the date objects and sending them to he updateTime function
+    **/
+    $("#slider").bind("valuesChanged", function(e, data){
+        dashboard.updateTime(data.values);
+    });
+
+
+
 });
 
 /**
@@ -429,6 +511,26 @@ function Dashboard () {
 
     // Current countryCode (if any);
     this.countryCode = null;
+}
+
+/**
+ *  Function that takes an object containing the new max and min date to show data from
+ *
+**/
+Dashboard.prototype.updateTime = function (timespan) {
+
+    var startMonth = timespan.min.getMonth(),
+        startYear = timespan.min.getYear(),
+        endMonth = timespan.max.getMonth(),
+        endYear = timespan.max.getYear();
+
+
+    console.log("Update the charts to correspond with the following months/years:");
+    console.log("From month nr " + startMonth + " year " + startYear);
+    console.log("To month nr " + endMonth + " year " + endYear);
+
+    console.log("sorry lord");
+
 }
 
 /**
@@ -470,6 +572,11 @@ Dashboard.prototype.getData = function (countryCode, district) {
 
 
     console.log("Hello I want to be an AJAX call when I grow up.");
+
+ var tmpdata = $.getJSON("../data/malaria_last12_1.js", function (data) { return data });
+
+
+ console.log(tmpdata);
 
     return fakeData;
 
@@ -690,75 +797,4 @@ $(function () {
         }]
     });
 });
-
-
-/**
- *  The Slider functionality.
- *
- *  This feature will control the time dimension of the data displayed.
- *
- *
-**/
-(function() {
-
-    var months = [  "Jan", "Feb", "Mar",
-                    "Apr", "May", "Jun",
-                    "Jul", "Aug", "Sept",
-                    "Oct", "Nov", "Dec"],
-
-        /**
-         *  Functionality for rounding down to last complete month.
-         *  This makes it so that the slider scale is not assymetrical.
-         *  Waste of time to create but it annoyed me.
-        **/
-        lastFinalMonthDate = (function() {
-
-            var month = new Date().getMonth(),
-                year = (new Date().getYear() + 1900);
-
-            return new Date(year, month, 1);
-
-        })();
-
-
-    $("#slider").dateRangeSlider({
-
-        arrows: false,
-
-        step: {
-            months: 1
-        },
-
-        bounds: {
-            min: new Date(2014, 0, 1),
-            max: lastFinalMonthDate
-        },
-
-        defaultValues: {
-            min: new Date(2014, 5, 1),
-            max: new Date(2015, 5, 1)
-        },
-
-        scales: [{
-            first: function(value){ return value; },
-
-            end: function(value) {return value; },
-
-            next: function(value){
-                var next = new Date(value);
-                return new Date(next.setMonth(value.getMonth() + 1));
-            },
-
-            label: function(value){
-                return months[value.getMonth()];
-            },
-
-            format: function(tickContainer, tickStart, tickEnd){
-                tickContainer.addClass("myCustomClass");
-            }
-        }]
-
-    });
-
-})();
 
