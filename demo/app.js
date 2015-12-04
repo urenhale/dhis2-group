@@ -345,8 +345,6 @@ $(function () {
                 },
                 drillup: function () {
                     this.setTitle(null, { text: 'Africa' });
-<<<<<<< HEAD
-=======
 
                     // Drilled up and loaded what? nothing?
                     console.log("Drilled up, update charts?!")
@@ -354,7 +352,6 @@ $(function () {
                     // "reset" countrycode.
                     dashboard = null;
 
->>>>>>> 9beab95aba6c64b66f7544a28be35d14103e2b28
                 }
             }
         },
@@ -430,7 +427,6 @@ function Dashboard () {
     this.line = null;
     this.bar = null;
 
-
     // Current countryCode (if any);
     this.countryCode = null;
 }
@@ -467,6 +463,9 @@ Dashboard.prototype.getData = function (countryCode, district) {
             }, {
                 name: 'Unknown',
                 y: 0.2
+            }, {
+                name: 'heisann',
+                y: 22
             }];
 
 
