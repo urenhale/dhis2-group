@@ -579,9 +579,14 @@ Dashboard.prototype.getPieData = function (countryCode, district) {
 
     // creating the above JSON format from JSON files
     // not sure how to properly get correct file path
-    var newPie = pieLocalJSON;
-    newPie[0].name = countryCode;
-    newPie[1].name = district;
+    var newPie = [];
+    var countryObj = new pieJSON(countryCode);
+    var districtObj = new pieJSON(district);
+    newPie.push(countryObj);
+    newPie.push(districtObj); 
+//    var newPie = pieLocalJSON;
+//    newPie[0].name = countryCode;
+//    newPie[1].name = district;
     getPieJSON("Cholera_SL1_2.js", newPie);
 
     return fakeData;
@@ -661,6 +666,10 @@ Dashboard.prototype.updateDistrict = function (district) {
  *  Function that handles pie chart
 **/
 Dashboard.prototype.createPie = function () {
+
+    var url = "Cholera_SL1_2.js";
+    var newPieObj = new pieJSON2();
+    getPieJSON(url, newPieObj);
 
     return $('#pie').highcharts({
             chart: {
@@ -871,6 +880,13 @@ $(function () {
     });
 });
 
+
+/*
+ * Methods for getting the correct JSON data for our pie chart.
+ * 
+ * ATM only testing with one set of disease data, Cholera_SL1_1.js
+ * and Cholera_SL1_2.js.
+*/
 function getPieJSON(url, pieObj) {
     $.getJSON(url, function(data) {
 	formatPieJSON(data, pieObj);
@@ -878,8 +894,7 @@ function getPieJSON(url, pieObj) {
 };
 
 function formatPieJSON(data, pieObj) {
-    var newDiseaseObj = diseaseJSON;
-    newDiseaseObj.name = data.rows[0][0];
+    var newDiseaseObj = new diseaseJSON(data.rows[0][0]);
 
     $.each(data.rows, function(key, val) {
 	newDiseaseObj.y += Number(val[2]);
@@ -905,6 +920,9 @@ function getDiseaseName(data, diseaseObj, pieObj) {
 };
 
 function addPieData(diseaseObj, pieObj) {
+
+
+    // not very... good?
     if (pieObj.name == "Diseases") {
 	pieObj.data.push(diseaseObj);
     } else {
@@ -914,29 +932,21 @@ function addPieData(diseaseObj, pieObj) {
     console.log("pieObj: " + JSON.stringify(pieObj));  
     // add to series part of pie object here - hoooow?
     // maybe make pieJSON like the pie object in createPie()?
-    // needs to be reset
+    // needs to be reset?
 };
 
-// the same as in the series array in createPie()
-var pieJSON = {
-    name: 'Diseases',
-    colorByPoint: true,
-    data: []
+function pieJSON2() {
+    this.name = "Diseases";
+    this.colorByPoint = true;
+    this.data = [];
 };
 
-// the same as in the data array in the series array in createPie()
-var diseaseJSON = {
-    name: "",
-    y: 0
+function pieJSON(name) {
+    this.name = name;
+    this.y = 0;
 };
 
-// the same as in getPieData()
-var pieLocalJSON = [{
-    name: "",
-    y: 56.33
-}, {
-    name: "",
-    y: 24.03,
-    sliced: true,
-    selected: true
-}];
+function diseaseJSON(name) {
+    this.name = name;
+    this.y = 0;
+};
