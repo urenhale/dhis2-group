@@ -1,5 +1,4 @@
 
-
 /**
  * Shorthand function for $(document).ready().
  *
@@ -578,6 +577,13 @@ Dashboard.prototype.getPieData = function (countryCode, district) {
 
  console.log(tmpdata);
 
+    // creating the above JSON format from JSON files
+    // not sure how to properly get correct file path
+    var newPie = pieLocalJSON;
+    newPie[0].name = countryCode;
+    newPie[1].name = district;
+    getPieJSON("Cholera_SL1_2.js", newPie);
+
     return fakeData;
 
 }
@@ -865,3 +871,72 @@ $(function () {
     });
 });
 
+function getPieJSON(url, pieObj) {
+    $.getJSON(url, function(data) {
+	formatPieJSON(data, pieObj);
+    });
+};
+
+function formatPieJSON(data, pieObj) {
+    var newDiseaseObj = diseaseJSON;
+    newDiseaseObj.name = data.rows[0][0];
+
+    $.each(data.rows, function(key, val) {
+	newDiseaseObj.y += Number(val[2]);
+    });
+    console.log("newDiseaseObj: " + JSON.stringify(newDiseaseObj));
+
+    var url = "Cholera_SL1_1.js";
+    $.getJSON(url, function(data2) {
+	getDiseaseName(data2, newDiseaseObj, pieObj);
+    });
+};
+
+function getDiseaseName(data, diseaseObj, pieObj) {
+    $.each(data.metaData.names, function(key, val) {
+	if (key == diseaseObj.name) {
+	    diseaseObj.name = val;
+	};
+    });
+
+    console.log("diseaseObj: " + JSON.stringify(diseaseObj));
+
+    addPieData(diseaseObj, pieObj);
+};
+
+function addPieData(diseaseObj, pieObj) {
+    if (pieObj.name == "Diseases") {
+	pieObj.data.push(diseaseObj);
+    } else {
+	pieObj.push(diseaseObj);
+    };
+
+    console.log("pieObj: " + JSON.stringify(pieObj));  
+    // add to series part of pie object here - hoooow?
+    // maybe make pieJSON like the pie object in createPie()?
+    // needs to be reset
+};
+
+// the same as in the series array in createPie()
+var pieJSON = {
+    name: 'Diseases',
+    colorByPoint: true,
+    data: []
+};
+
+// the same as in the data array in the series array in createPie()
+var diseaseJSON = {
+    name: "",
+    y: 0
+};
+
+// the same as in getPieData()
+var pieLocalJSON = [{
+    name: "",
+    y: 56.33
+}, {
+    name: "",
+    y: 24.03,
+    sliced: true,
+    selected: true
+}];
