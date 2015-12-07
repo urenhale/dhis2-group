@@ -667,7 +667,7 @@ Dashboard.prototype.updateDistrict = function (district) {
 **/
 Dashboard.prototype.createPie = function () {
 
-    var url = "Cholera_SL1_2.js";
+    var url = "../data/Cholera_SL1_2.js";
     var newPieObj = new pieJSON2();
     getPieJSON(url, newPieObj);
 
@@ -901,7 +901,7 @@ function formatPieJSON(data, pieObj) {
     });
     console.log("newDiseaseObj: " + JSON.stringify(newDiseaseObj));
 
-    var url = "Cholera_SL1_1.js";
+    var url = "../data/Cholera_SL1_1.js";
     $.getJSON(url, function(data2) {
 	getDiseaseName(data2, newDiseaseObj, pieObj);
     });
