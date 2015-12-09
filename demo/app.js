@@ -3,7 +3,7 @@
  * Shorthand function for $(document).ready().
  *
  * Function is invoked once document is marked as ready by browser.
-**/
+ **/
 
 $(function () {
 
@@ -12,7 +12,7 @@ $(function () {
 
     /**
      *  All the shit beneath this line is essentially legacy shit.
-    **/
+     **/
 
 
     // Preparing demo data.
@@ -250,15 +250,15 @@ $(function () {
         }
     ];
 
-/**
- *  The Map will mainly serve as a way to navigate / select countries and districts.
- *
- *  Once a country or district is selected, the graphs on the right hand side (pie, line and bar)
- *  Should be updated.
- *
- *  The Search Box should have the same functionality but intergrated with Map so that the Map
- *  updates on what country have been searched / selected through the Search Box.
-**/
+    /**
+     *  The Map will mainly serve as a way to navigate / select countries and districts.
+     *
+     *  Once a country or district is selected, the graphs on the right hand side (pie, line and bar)
+     *  Should be updated.
+     *
+     *  The Search Box should have the same functionality but intergrated with Map so that the Map
+     *  updates on what country have been searched / selected through the Search Box.
+     **/
 
     // Set drilldown pointers
     $.each(data, function (i) {
@@ -277,19 +277,19 @@ $(function () {
                     if (!e.seriesOptions) {
 
                         var chart = this,
-                            countryCode = e.point.drilldown,
-                            mapKey = 'countries/'+countryCode+'/' + countryCode + '-all',
+                        countryCode = e.point.drilldown,
+                        mapKey = 'countries/'+countryCode+'/' + countryCode + '-all',
 
-                            // Handle error, the timeout is cleared on success
-                            fail = setTimeout(function () {
-                                if (!Highcharts.maps[mapKey]) {
-                                    chart.showLoading('<i class="icon-frown"></i> Failed loading ' + e.point.name);
+                        // Handle error, the timeout is cleared on success
+                        fail = setTimeout(function () {
+                            if (!Highcharts.maps[mapKey]) {
+                                chart.showLoading('<i class="icon-frown"></i> Failed loading ' + e.point.name);
 
-                                    fail = setTimeout(function () {
-                                        chart.hideLoading();
-                                    }, 1000);
-                                }
-                            }, 3000);
+                                fail = setTimeout(function () {
+                                    chart.hideLoading();
+                                }, 1000);
+                            }
+                        }, 3000);
 
 
                         // At this point the country code and mapkey has been determined.
@@ -337,7 +337,7 @@ $(function () {
                                 }
                             });
                         });
-                    
+			
                     }
 
                     this.setTitle(null, { text: e.point.name });
@@ -415,36 +415,36 @@ $(function () {
     });
 
 
-/**
- *  The Slider functionality.
- *
- *  This feature will control the time dimension of the data displayed.
- *
- *
-**/
+    /**
+     *  The Slider functionality.
+     *
+     *  This feature will control the time dimension of the data displayed.
+     *
+     *
+     **/
     var months = [  "Jan", "Feb", "Mar",
                     "Apr", "May", "Jun",
                     "Jul", "Aug", "Sept",
                     "Oct", "Nov", "Dec"],
 
-        /**
-         *  Functionality for rounding down to last complete month.
-         *  This makes it so that the slider scale is not assymetrical.
-         *  Waste of time to create but it annoyed me.
-        **/
-        lastFinalMonthDate = (function() {
+    /**
+     *  Functionality for rounding down to last complete month.
+     *  This makes it so that the slider scale is not assymetrical.
+     *  Waste of time to create but it annoyed me.
+     **/
+    lastFinalMonthDate = (function() {
 
-            var month = new Date().getMonth(),
-                year = (new Date().getYear() + 1900);
+        var month = new Date().getMonth(),
+        year = (new Date().getYear() + 1900);
 
-            return new Date(year, month, 1);
+        return new Date(year, month, 1);
 
-        })();
+    })();
 
     /**
      *  This is where the rangeslider is created.
      *
-    **/
+     **/
     $("#slider").dateRangeSlider({
 
         arrows: false,
@@ -488,7 +488,7 @@ $(function () {
      *  Functionality for when the values have changed.
      *
      *  Extracting the date objects and sending them to he updateTime function
-    **/
+     **/
     $("#slider").bind("valuesChanged", function(e, data){
         dashboard.updateTime(data.values);
     });
@@ -501,7 +501,7 @@ $(function () {
  *  Main object controlling charts & information.  
  *
  *
-**/
+ **/
 function Dashboard () {
 
     this.pie = this.createPie().highcharts();
@@ -515,13 +515,13 @@ function Dashboard () {
 /**
  *  Function that takes an object containing the new max and min date to show data from
  *
-**/
+ **/
 Dashboard.prototype.updateTime = function (timespan) {
 
     var startMonth = timespan.min.getMonth(),
-        startYear = timespan.min.getYear(),
-        endMonth = timespan.max.getMonth(),
-        endYear = timespan.max.getYear();
+    startYear = timespan.min.getYear(),
+    endMonth = timespan.max.getMonth(),
+    endYear = timespan.max.getYear();
 
 
     console.log("Update the charts to correspond with the following months/years:");
@@ -536,7 +536,7 @@ Dashboard.prototype.updateTime = function (timespan) {
  * Function that takes country code and returns data for the country (or region amirite)
  *
  * BUT! As we do not have the data for any other country than Sierra Leone, we will shortcut that process.
-**/
+ **/
 Dashboard.prototype.getPieData = function (countryCode, district) {
 
     if (district == null) {
@@ -545,10 +545,173 @@ Dashboard.prototype.getPieData = function (countryCode, district) {
     }
 
     var fakeData = [{
-                name: countryCode,
+        name: countryCode,
+        y: 56.33
+    }, {
+        name: district,
+        y: 24.03,
+        sliced: true,
+        selected: true
+    }, {
+        name: 'Ebola',
+        y: 10.38
+    }, {
+        name: 'Aids',
+        y: 4.77
+    }, {
+        name: 'Cancer',
+        y: 0.91
+    }, {
+        name: 'Unknown',
+        y: 0.2
+    }, {
+        name: 'heisann',
+        y: 22
+    }];
+
+
+    console.log("Hello I want to be an AJAX call when I grow up.");
+
+    var tmpdata = $.getJSON("../data/malaria_last12_1.js", function (data) { return data });
+    console.log(tmpdata);
+
+    // creating the above JSON format from JSON files
+    var newPie = [];
+    var countryObj = new pieJSON(countryCode);
+    var districtObj = new pieJSON(district);
+    newPie.push(countryObj);
+    newPie.push(districtObj); 
+
+    getPieJSON("../data/Cholera_SL1_2.js", newPie);
+
+    return fakeData;
+}
+
+/**
+ *  Function that creates the Bar and Line specific data based on location selected.
+ *
+ *  The Bar and Line data looks different as there are multuple series instead of 4 different sets of data for each entry (each of the pizza slices).
+ *
+ **/
+Dashboard.prototype.getBarLineData = function (countryCode, district) {
+    
+    if (district == null) {
+	district = "jot";
+    };
+
+    console.log("gettin barline data for " + countryCode + " and " + district);
+
+    var fakeData = [{
+        name: countryCode,
+        data: [7.0, 6.9, 9.5, 14.5, 18.2, 21.5, 25.2, 26.5, 23.3, 18.3, 13.9, 9.6]
+    }, {
+        name: district,
+        data: [-0.2, 0.8, 5.7, 11.3, 17.0, 22.0, 24.8, 24.1, 20.1, 14.1, 8.6, 2.5]
+    }, {
+        name: 'Aids',
+        data: [-0.9, 0.6, 3.5, 8.4, 13.5, 17.0, 18.6, 17.9, 14.3, 9.0, 3.9, 1.0]
+    }, {
+        name: 'Unknown',
+        data: [3.9, 4.2, 5.7, 8.5, 11.9, 15.2, 17.0, 16.6, 14.2, 10.3, 6.6, 4.8]
+    }];
+
+
+    // creating the above JSON format from JSON files
+    var newLine = [];
+    var countryObj = new lineJSON(countryCode);
+    var districtObj = new lineJSON(district);
+
+    newLine.push(countryObj);
+    newLine.push(districtObj);
+
+    getLineJSON("../data/Cholera_SL1_2.js", newLine);
+
+    return fakeData;
+
+}
+
+/**
+ *  function that updates aaaaall the charts based on country
+ *
+ *  The pie chart needs different data than the line and bar charts.
+ *  Therefore two different functions are called for getting / formatting this data.
+ *
+ **/
+Dashboard.prototype.updateCountry = function (countryCode) {
+
+    this.countryCode = countryCode;
+
+    var pieData = this.getPieData(countryCode),
+    barLineData = this.getBarLineData(countryCode);
+
+    // updating the pie chhart
+    this.updatePie(pieData);
+
+    // updating the line and bar
+    this.updateBarLine(barLineData);
+
+}
+
+/**
+ *  function that updates data relevant to district shit!
+ * probably time to overlad.com
+ **/
+Dashboard.prototype.updateDistrict = function (district) {
+
+    var pieData = this.getPieData(this.countryCode, district),
+    barLineData = this.getBarLineData(this.countryCode, district);
+
+    // updating the pie chart
+    this.updatePie(pieData);
+
+    // updating the bar and line chart
+    this.updateBarLine(barLineData);
+}
+
+
+/**
+ *  Function that handles pie chart
+ **/
+Dashboard.prototype.createPie = function () {
+
+    var url = "../data/Cholera_SL1_2.js";
+    var newPieObj = new pieJSON2();
+    getPieJSON(url, newPieObj);
+
+    return $('#pie').highcharts({
+        chart: {
+            plotBackgroundColor: null,
+            plotBorderWidth: null,
+            plotShadow: false,
+            type: 'pie'
+        },
+        title: {
+            text: 'Disease shares'
+        },
+        tooltip: {
+            pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+        },
+        plotOptions: {
+            pie: {
+                allowPointSelect: true,
+                cursor: 'pointer',
+                dataLabels: {
+                    enabled: true,
+                    format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+                    style: {
+                        color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                    }
+                }
+            }
+        },
+        series: [{
+            name: 'Diseases',
+            colorByPoint: true,
+            data: [{
+                name: 'Insomnia',
                 y: 56.33
             }, {
-                name: district,
+                name: 'Swine Flu',
                 y: 24.03,
                 sliced: true,
                 selected: true
@@ -564,51 +727,58 @@ Dashboard.prototype.getPieData = function (countryCode, district) {
             }, {
                 name: 'Unknown',
                 y: 0.2
-            }, {
-                name: 'heisann',
-                y: 22
-            }];
-
-
-    console.log("Hello I want to be an AJAX call when I grow up.");
-
- var tmpdata = $.getJSON("../data/malaria_last12_1.js", function (data) { return data });
-
-
- console.log(tmpdata);
-
-    // creating the above JSON format from JSON files
-    // not sure how to properly get correct file path
-    var newPie = [];
-    var countryObj = new pieJSON(countryCode);
-    var districtObj = new pieJSON(district);
-    newPie.push(countryObj);
-    newPie.push(districtObj); 
-//    var newPie = pieLocalJSON;
-//    newPie[0].name = countryCode;
-//    newPie[1].name = district;
-    getPieJSON("Cholera_SL1_2.js", newPie);
-
-    return fakeData;
-
+            }]
+        }]
+    });
 }
 
 /**
- *  Function that creates the Bar and Line specific data based on location selected.
+ *  function that creates the line chart
  *
- *  The Bar and Line data looks different as there are multuple series instead of 4 different sets of data for each entry (each of the pizza slices).
- *
-**/
-Dashboard.prototype.getBarLineData = function (countryCode, district) {
+ **/
+Dashboard.prototype.createLine = function () {
 
+    var url = "../data/Cholera_SL1_2.js";
+    var newLineObj = new lineJSON();
+    getLineJSON(url, newLineObj);
 
-    console.log("gettin barline data for " + countryCode + " and " + district);
-
-    var fakeData = [{
-            name: countryCode,
+    return $('#line').highcharts({
+        title: {
+            text: 'Monthly Average Deaths',
+            x: -20 //center
+        },
+        subtitle: {
+            text: 'Source: Random',
+            x: -20
+        },
+        xAxis: {
+            categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                         'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+        },
+        yAxis: {
+            title: {
+                text: 'Temperature (°C)'
+            },
+            plotLines: [{
+                value: 0,
+                width: 1,
+                color: '#808080'
+            }]
+        },
+        tooltip: {
+            valueSuffix: 'X'
+        },
+        legend: {
+            layout: 'vertical',
+            align: 'right',
+            verticalAlign: 'middle',
+            borderWidth: 0
+        },
+        series: [{
+            name: 'Ebola',
             data: [7.0, 6.9, 9.5, 14.5, 18.2, 21.5, 25.2, 26.5, 23.3, 18.3, 13.9, 9.6]
         }, {
-            name: district,
+            name: 'Cancer',
             data: [-0.2, 0.8, 5.7, 11.3, 17.0, 22.0, 24.8, 24.1, 20.1, 14.1, 8.6, 2.5]
         }, {
             name: 'Aids',
@@ -616,173 +786,14 @@ Dashboard.prototype.getBarLineData = function (countryCode, district) {
         }, {
             name: 'Unknown',
             data: [3.9, 4.2, 5.7, 8.5, 11.9, 15.2, 17.0, 16.6, 14.2, 10.3, 6.6, 4.8]
-        }];
-
-
-    return fakeData;
-
-}
-
-/**
- *  function that updates aaaaall the charts based on country
- *
- *  The pie chart needs different data than the line and bar charts.
- *  Therefore two different functions are called for getting / formatting this data.
- *
-**/
-Dashboard.prototype.updateCountry = function (countryCode) {
-
-    this.countryCode = countryCode;
-
-    var pieData = this.getPieData(countryCode),
-        barLineData = this.getBarLineData(countryCode);
-
-    // updating the pie chhart
-    this.updatePie(pieData);
-
-    // updating the line and bar
-    this.updateBarLine(barLineData);
-
-}
-
-/**
- *  function that updates data relevant to district shit!
- * probably time to overlad.com
-**/
-Dashboard.prototype.updateDistrict = function (district) {
-
-    var pieData = this.getPieData(this.countryCode, district),
-        barLineData = this.getBarLineData(this.countryCode, district);
-
-    // updating the pie chart
-    this.updatePie(pieData);
-
-    // updating the bar and line chart
-    this.updateBarLine(barLineData);
-}
-
-
-/**
- *  Function that handles pie chart
-**/
-Dashboard.prototype.createPie = function () {
-
-    var url = "../data/Cholera_SL1_2.js";
-    var newPieObj = new pieJSON2();
-    getPieJSON(url, newPieObj);
-
-    return $('#pie').highcharts({
-            chart: {
-                plotBackgroundColor: null,
-                plotBorderWidth: null,
-                plotShadow: false,
-                type: 'pie'
-            },
-            title: {
-                text: 'Disease shares'
-            },
-            tooltip: {
-                pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
-            },
-            plotOptions: {
-                pie: {
-                    allowPointSelect: true,
-                    cursor: 'pointer',
-                    dataLabels: {
-                        enabled: true,
-                        format: '<b>{point.name}</b>: {point.percentage:.1f} %',
-                        style: {
-                            color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
-                        }
-                    }
-                }
-            },
-            series: [{
-                name: 'Diseases',
-                colorByPoint: true,
-                data: [{
-                    name: 'Insomnia',
-                    y: 56.33
-                }, {
-                    name: 'Swine Flu',
-                    y: 24.03,
-                    sliced: true,
-                    selected: true
-                }, {
-                    name: 'Ebola',
-                    y: 10.38
-                }, {
-                    name: 'Aids',
-                    y: 4.77
-                }, {
-                    name: 'Cancer',
-                    y: 0.91
-                }, {
-                    name: 'Unknown',
-                    y: 0.2
-                }]
-            }]
-        });
-}
-
-/**
- *  function that creates the line chart
- *
-**/
-Dashboard.prototype.createLine = function () {
-
-    return $('#line').highcharts({
-                title: {
-                    text: 'Monthly Average Deaths',
-                    x: -20 //center
-                },
-                subtitle: {
-                    text: 'Source: Random',
-                    x: -20
-                },
-                xAxis: {
-                    categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-                        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-                },
-                yAxis: {
-                    title: {
-                        text: 'Temperature (°C)'
-                    },
-                    plotLines: [{
-                        value: 0,
-                        width: 1,
-                        color: '#808080'
-                    }]
-                },
-                tooltip: {
-                    valueSuffix: 'X'
-                },
-                legend: {
-                    layout: 'vertical',
-                    align: 'right',
-                    verticalAlign: 'middle',
-                    borderWidth: 0
-                },
-                series: [{
-                    name: 'Ebola',
-                    data: [7.0, 6.9, 9.5, 14.5, 18.2, 21.5, 25.2, 26.5, 23.3, 18.3, 13.9, 9.6]
-                }, {
-                    name: 'Cancer',
-                    data: [-0.2, 0.8, 5.7, 11.3, 17.0, 22.0, 24.8, 24.1, 20.1, 14.1, 8.6, 2.5]
-                }, {
-                    name: 'Aids',
-                    data: [-0.9, 0.6, 3.5, 8.4, 13.5, 17.0, 18.6, 17.9, 14.3, 9.0, 3.9, 1.0]
-                }, {
-                    name: 'Unknown',
-                    data: [3.9, 4.2, 5.7, 8.5, 11.9, 15.2, 17.0, 16.6, 14.2, 10.3, 6.6, 4.8]
-                }]
-            });
+        }]
+    });
 }
 
 
 /**
  *  updatePie
-**/
+ **/
 Dashboard.prototype.updatePie = function (data) {
 
     // Step Two, set (and redraw chart) new data to chart.
@@ -791,7 +802,7 @@ Dashboard.prototype.updatePie = function (data) {
 
 /**
  *  updateBarLine
-**/
+ **/
 Dashboard.prototype.updateBarLine = function (data) {
 
     // Step Two, set (and redraw chart) new data to chart.
@@ -879,74 +890,3 @@ $(function () {
         }]
     });
 });
-
-
-/*
- * Methods for getting the correct JSON data for our pie chart.
- * 
- * ATM only testing with one set of disease data, Cholera_SL1_1.js
- * and Cholera_SL1_2.js.
-*/
-function getPieJSON(url, pieObj) {
-    $.getJSON(url, function(data) {
-	formatPieJSON(data, pieObj);
-    });
-};
-
-function formatPieJSON(data, pieObj) {
-    var newDiseaseObj = new diseaseJSON(data.rows[0][0]);
-
-    $.each(data.rows, function(key, val) {
-	newDiseaseObj.y += Number(val[2]);
-    });
-    console.log("newDiseaseObj: " + JSON.stringify(newDiseaseObj));
-
-    var url = "../data/Cholera_SL1_1.js";
-    $.getJSON(url, function(data2) {
-	getDiseaseName(data2, newDiseaseObj, pieObj);
-    });
-};
-
-function getDiseaseName(data, diseaseObj, pieObj) {
-    $.each(data.metaData.names, function(key, val) {
-	if (key == diseaseObj.name) {
-	    diseaseObj.name = val;
-	};
-    });
-
-    console.log("diseaseObj: " + JSON.stringify(diseaseObj));
-
-    addPieData(diseaseObj, pieObj);
-};
-
-function addPieData(diseaseObj, pieObj) {
-
-
-    // not very... good?
-    if (pieObj.name == "Diseases") {
-	pieObj.data.push(diseaseObj);
-    } else {
-	pieObj.push(diseaseObj);
-    };
-
-    console.log("pieObj: " + JSON.stringify(pieObj));  
-    // add to series part of pie object here - hoooow?
-    // maybe make pieJSON like the pie object in createPie()?
-    // needs to be reset?
-};
-
-function pieJSON2() {
-    this.name = "Diseases";
-    this.colorByPoint = true;
-    this.data = [];
-};
-
-function pieJSON(name) {
-    this.name = name;
-    this.y = 0;
-};
-
-function diseaseJSON(name) {
-    this.name = name;
-    this.y = 0;
-};
