@@ -269,8 +269,163 @@ $(function () {
 	$("#mapDropdown").change(function () {
         var $selectedItem = $("option:selected", this)
 		dashboard.updateCountry($selectedItem['0'].value);
+		console.log($selectedItem['0'].value)
+		
+		var mapKey =  mapKey = 'countries/'+$selectedItem['0'].value+'/' + $selectedItem['0'].value + '-all'
+		changeMap(mapKey, $selectedItem.text());
+		
 	})
 
+	function changeMap(mapKey, name){
+		console.log("changing map")
+		console.log(Highcharts.maps['custom/africa']['features'])
+		$('#map').highcharts('Map', {
+			chart : {
+            events: {
+                drilldown: function (e) {
+
+                    if (!e.seriesOptions) {
+
+                        var chart = this,
+                        countryCode = e.point.drilldown,
+                        mapKey = 'countries/'+countryCode+'/' + countryCode + '-all',
+
+                        // Handle error, the timeout is cleared on success
+                        fail = setTimeout(function () {
+                            if (!Highcharts.maps[mapKey]) {
+                                chart.showLoading('<i class="icon-frown"></i> Failed loading ' + e.point.name);
+
+                                fail = setTimeout(function () {
+                                    chart.hideLoading();
+                                }, 1000);
+                            }
+                        }, 3000);
+
+
+                        // At this point the country code and mapkey has been determined.
+                        // Will use the country code and send it to the functionality that handles chart update!
+                        dashboard.updateCountry(countryCode);
+
+                        // Show the spinner
+                        chart.showLoading('<i class="icon-spinner icon-spin icon-3x"></i>'); // Font Awesome spinner
+
+                        // Load the drilldown map
+                        $.getScript('https://code.highcharts.com/mapdata/' + mapKey + '.js', function () {
+
+                            data = Highcharts.geojson(Highcharts.maps[mapKey]);
+
+                            // Set a non-random bogus value
+                            $.each(data, function (i) {
+                                this.value = i;
+                            });
+
+                            // Hide loading and add series
+                            chart.hideLoading();
+                            clearTimeout(fail);
+                            chart.addSeriesAsDrilldown(e.point, {
+                                name: e.point.name,
+                                data: data,
+                                allowPointSelect: true,
+                                cursor: 'pointer',
+                                states: {
+                                    select: {
+                                        color: '#a4edba',
+                                        borderColor: 'black',
+                                        dashStyle: 'shortdot'
+                                    }
+                                },
+                                point: {
+                                    events: {
+                                        click: function() {
+                                            dashboard.updateDistrict(this.name);
+                                        }
+                                    }
+                                },
+                                dataLabels: {
+                                    enabled: true,
+                                    format: '{point.name}'
+                                }
+                            
+							
+							});
+                        });
+			
+                    }
+
+                    this.setTitle(null, { text: e.point.name });
+                },
+                drillup: function () {
+                    this.setTitle(null, { text: 'Africa' });
+
+                    // Drilled up and loaded what? nothing?
+                    console.log("Drilled up, update charts?!")
+
+                    // "reset" countrycode.
+                    dashboard.countryCode = null;
+
+                }
+            }
+        },
+
+        title : {
+            text : name
+        },
+
+        subtitle : {
+            text : 'Click to display data'
+        },
+
+        mapNavigation: {
+            enabled: true,
+            buttonOptions: {
+                verticalAlign: 'bottom'
+            }
+        },
+
+        colorAxis: {
+            min: 0
+        },
+
+        mapNavigation: {
+            enabled: true,
+            buttonOptions: {
+                verticalAlign: 'bottom'
+            }
+        },
+
+        series : [{
+            data : data,
+            mapData: Highcharts.maps[mapKey],
+            joinBy: 'hc-key',
+            name: 'name',
+            states: {
+                hover: {
+                    color: '#BADA55'
+                }
+            },
+            dataLabels: {
+                enabled: true,
+                format: '{point.name}'
+            }
+        }],
+
+        drilldown: {
+            //series: drilldownSeries,
+            activeDataLabelStyle: {
+                color: '#FFFFFF',
+                textDecoration: 'none',
+                textShadow: '0 0 3px #000000'
+            },
+            drillUpButton: {
+                relativeTo: 'spacingBox',
+                position: {
+                    x: 0,
+                    y: 60
+                }
+            }
+        }
+		})
+	}
    
 	
     /**
