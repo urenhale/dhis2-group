@@ -5,9 +5,12 @@
  * Function is invoked once document is marked as ready by browser.
  **/
 
+// temporary global variable
+var dashboard;
+
 $(function () {
 
-    var dashboard = new Dashboard();
+    dashboard = new Dashboard();
 
 
     /**
@@ -508,6 +511,8 @@ function Dashboard () {
     this.line = this.createLine().highcharts();
     this.bar = null;
 
+    this.pieData = [];
+
     // Current countryCode (if any);
     this.countryCode = null;
 }
@@ -539,53 +544,32 @@ Dashboard.prototype.updateTime = function (timespan) {
  **/
 Dashboard.prototype.getPieData = function (countryCode, district) {
 
-    if (district == null) {
-
-        district = "swin3flu3";
+    if (district != null) {
+        console.log("fuckin update some district shiet br9");
     }
 
-    var fakeData = [{
-        name: countryCode,
-        y: 56.33
-    }, {
-        name: district,
-        y: 24.03,
-        sliced: true,
-        selected: true
-    }, {
-        name: 'Ebola',
-        y: 10.38
-    }, {
-        name: 'Aids',
-        y: 4.77
-    }, {
-        name: 'Cancer',
-        y: 0.91
-    }, {
-        name: 'Unknown',
-        y: 0.2
-    }, {
-        name: 'heisann',
-        y: 22
-    }];
+    // clearing prevoiuos piedata
+    this.pieData = [];
 
+    // getting and formatting the disease data!
+    getPieJSON("../data/Cholera_SL1_2.js", "../data/Cholera_SL1_1.js", false);
+    getPieJSON("../data/Malaria_SL1_2.json", "../data/Malaria_SL1_1.json", false);
+    getPieJSON("../data/Measles_SL1_2.json", "../data/Measles_SL1_1.json", true);
 
-    console.log("Hello I want to be an AJAX call when I grow up.");
-
-    var tmpdata = $.getJSON("../data/malaria_last12_1.js", function (data) { return data });
-    console.log(tmpdata);
-
-    // creating the above JSON format from JSON files
-    var newPie = [];
-    var countryObj = new pieJSON(countryCode);
-    var districtObj = new pieJSON(district);
-    newPie.push(countryObj);
-    newPie.push(districtObj); 
-
-    getPieJSON("../data/Cholera_SL1_2.js", newPie);
-
-    return fakeData;
 }
+
+/**
+ *  updatePie
+ **/
+Dashboard.prototype.updatePie = function (data, redraw) {
+
+    this.pieData.push(data);
+
+    if (redraw) {
+        this.pie.series[0].setData(this.pieData);
+    }
+}
+
 
 /**
  *  Function that creates the Bar and Line specific data based on location selected.
@@ -641,11 +625,15 @@ Dashboard.prototype.updateCountry = function (countryCode) {
 
     this.countryCode = countryCode;
 
-    var pieData = this.getPieData(countryCode),
-    barLineData = this.getBarLineData(countryCode);
+
+    //var pieData = this.getPieData(countryCode),
+    var barLineData = this.getBarLineData(countryCode);
+
+    this.getPieData(countryCode);
 
     // updating the pie chhart
-    this.updatePie(pieData);
+    // call this from new funcitonality
+    //this.updatePie(pieData);
 
     // updating the line and bar
     this.updateBarLine(barLineData);
@@ -658,11 +646,13 @@ Dashboard.prototype.updateCountry = function (countryCode) {
  **/
 Dashboard.prototype.updateDistrict = function (district) {
 
-    var pieData = this.getPieData(this.countryCode, district),
-    barLineData = this.getBarLineData(this.countryCode, district);
+    //var pieData = this.getPieData(this.countryCode, district),
+    var barLineData = this.getBarLineData(this.countryCode, district);
+
+    this.getPieData(this.countryCode, district),
 
     // updating the pie chart
-    this.updatePie(pieData);
+    //this.updatePie(pieData);
 
     // updating the bar and line chart
     this.updateBarLine(barLineData);
@@ -674,9 +664,13 @@ Dashboard.prototype.updateDistrict = function (district) {
  **/
 Dashboard.prototype.createPie = function () {
 
+    /*
+
     var url = "../data/Cholera_SL1_2.js";
     var newPieObj = new pieJSON2();
     getPieJSON(url, newPieObj);
+
+*/
 
     return $('#pie').highcharts({
         chart: {
@@ -788,16 +782,6 @@ Dashboard.prototype.createLine = function () {
             data: [3.9, 4.2, 5.7, 8.5, 11.9, 15.2, 17.0, 16.6, 14.2, 10.3, 6.6, 4.8]
         }]
     });
-}
-
-
-/**
- *  updatePie
- **/
-Dashboard.prototype.updatePie = function (data) {
-
-    // Step Two, set (and redraw chart) new data to chart.
-    this.pie.series[0].setData(data);
 }
 
 /**
