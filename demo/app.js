@@ -250,6 +250,13 @@ $(function () {
         }
     ];
 
+    $("#search").click(function() { 
+        var str = $("#field").val(); 
+        console.log(str);
+       // alert("Handler for .click() called." + str );
+        return false;
+    });
+    
     /**
      *  The Map will mainly serve as a way to navigate / select countries and districts.
      *
