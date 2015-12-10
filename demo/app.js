@@ -24,10 +24,12 @@ $(function () {
     var data = [
         {
             "hc-key": "ug",
+			"cName": "Uganda",
             "value": 0
         },
         {
             "hc-key": "ng",
+			"cName": "Nigeria",
             "value": 1
         },
         {
@@ -252,18 +254,22 @@ $(function () {
         }
     ];
 	
+	
+	//populate dropdown
 	var mapOptions;
 	var mapCount = 0;
 
-	$.each(data, function (mapGroup, maps) {
-        if (mapGroup !== "version") {
-			
-			$("#mapDropdown").append('<option value="custom/world.js">' + maps['hc-key'] + '</option>');
-            mapOptions += '<option class="option-header">' + mapGroup + '</option>';
-        }
+	$.each(Highcharts.maps, function (mapGroup, maps) {
+		$.each(maps['features'], function(){
+			mapOptions += '<option value=' + this['properties']['hc-key'] +'>' + this['properties']['name'] + '</option>';
+		})
     });
-    searchText = 'Search ' + mapCount + ' maps';
-    mapOptions = '<option value="custom/world.js">' + searchText + '</option>' + mapOptions;
+	$("#mapDropdown").append(mapOptions);
+	
+	$("#mapDropdown").change(function () {
+        var $selectedItem = $("option:selected", this)
+		dashboard.updateCountry($selectedItem['0'].value);
+	})
 
    
 	
@@ -352,7 +358,9 @@ $(function () {
                                     enabled: true,
                                     format: '{point.name}'
                                 }
-                            });
+                            
+							
+							});
                         });
 			
                     }
