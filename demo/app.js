@@ -272,18 +272,24 @@ $(function () {
 		console.log($selectedItem['0'].value)
 		
 		var mapKey =  mapKey = 'countries/'+$selectedItem['0'].value+'/' + $selectedItem['0'].value + '-all'
-		changeMap(mapKey, $selectedItem.text());
+		updateMap(mapKey, $selectedItem.text());
 		
 	})
+	
+	function updateMap(mapKey, name){
+		Highcharts.getScript('https://code.highcharts.com/mapdata/' + mapKey + '.js', function(){
+			console.log(Highcharts.maps)
+			changeMap(mapKey, name)
+			});
+	}
 
 	function changeMap(mapKey, name){
 		console.log("changing map")
-		console.log(Highcharts.maps['custom/africa']['features'])
+		console.log(Highcharts.maps['mapKey'])
 		$('#map').highcharts('Map', {
 			chart : {
             events: {
                 drilldown: function (e) {
-
                     if (!e.seriesOptions) {
 
                         var chart = this,
@@ -394,7 +400,7 @@ $(function () {
         },
 
         series : [{
-            data : data,
+            data : Highcharts.geojson(Highcharts.maps[mapKey]),
             mapData: Highcharts.maps[mapKey],
             joinBy: 'hc-key',
             name: 'name',
