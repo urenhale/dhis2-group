@@ -402,7 +402,7 @@ $(function () {
         series : [{
             data : Highcharts.geojson(Highcharts.maps[mapKey]),
             mapData: Highcharts.maps[mapKey],
-            joinBy: 'hc-key',
+            joinBy: 'name',
             name: 'name',
             states: {
                 hover: {
@@ -431,6 +431,12 @@ $(function () {
             }
         }
 		})
+		
+		console.log("HI")
+		console.log(Highcharts.geojson(Highcharts.maps[mapKey]))
+		this.drilldown = this['hc-key'];
+        this.value = this['value'];
+		console.log(this.drilldownSeries)
 	}
    
 	
@@ -453,7 +459,6 @@ $(function () {
 
     // Initiate the chart
     $('#map').highcharts('Map', {
-
         chart : {
             events: {
                 drilldown: function (e) {
