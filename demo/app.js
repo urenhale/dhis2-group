@@ -1,5 +1,4 @@
-
-/**
+ /**
  * Shorthand function for $(document).ready().
  *
  * Function is invoked once document is marked as ready by browser.
@@ -578,6 +577,7 @@ Dashboard.prototype.updatePie = function (data, redraw) {
     this.pieData.push(data);
 
     if (redraw) {
+	// updating this array last, pieData should be in the correct format
         this.pie.series[0].setData(this.pieData);
     }
 }
@@ -613,6 +613,8 @@ Dashboard.prototype.updateBarLine = function (data, redraw) {
 
     if (redraw) {
 	//console.log(JSON.stringify(this.lineData));
+
+	//for updating the values/names of lineChart, lineData should be in correct format
 	for (i = 0; i < this.lineData.length; i++) {
 	    this.line.series[i].update({name: this.lineData[i].name}, false);
 	    this.line.series[i].setData(this.lineData[i].data, false);
@@ -781,7 +783,11 @@ Dashboard.prototype.createLine = function () {
     });
 }
 
-// BAR
+/**
+ * Function that creates the bar chart
+ *
+ * TODO: should use line chart functions
+ **/
 $(function () {
 
     $('#bar').highcharts({
