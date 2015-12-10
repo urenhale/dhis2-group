@@ -13,6 +13,8 @@ $(function () {
     /**
      *  All the shit beneath this line is essentially legacy shit.
      **/
+	 
+	 
 
 
     // Preparing demo data.
@@ -249,7 +251,22 @@ $(function () {
             "value": 56
         }
     ];
+	
+	var mapOptions;
+	var mapCount = 0;
 
+	$.each(data, function (mapGroup, maps) {
+        if (mapGroup !== "version") {
+			
+			$("#mapDropdown").append('<option value="custom/world.js">' + maps['hc-key'] + '</option>');
+            mapOptions += '<option class="option-header">' + mapGroup + '</option>';
+        }
+    });
+    searchText = 'Search ' + mapCount + ' maps';
+    mapOptions = '<option value="custom/world.js">' + searchText + '</option>' + mapOptions;
+
+   
+	
     /**
      *  The Map will mainly serve as a way to navigate / select countries and districts.
      *
@@ -889,4 +906,5 @@ $(function () {
 
         }]
     });
+		
 });
