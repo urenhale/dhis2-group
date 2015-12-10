@@ -1,10 +1,9 @@
 
-
 /**
  * Shorthand function for $(document).ready().
  *
  * Function is invoked once document is marked as ready by browser.
-**/
+ **/
 
 $(function () {
 
@@ -13,7 +12,7 @@ $(function () {
 
     /**
      *  All the shit beneath this line is essentially legacy shit.
-    **/
+     **/
 
 
     // Preparing demo data.
@@ -251,15 +250,15 @@ $(function () {
         }
     ];
 
-/**
- *  The Map will mainly serve as a way to navigate / select countries and districts.
- *
- *  Once a country or district is selected, the graphs on the right hand side (pie, line and bar)
- *  Should be updated.
- *
- *  The Search Box should have the same functionality but intergrated with Map so that the Map
- *  updates on what country have been searched / selected through the Search Box.
-**/
+    /**
+     *  The Map will mainly serve as a way to navigate / select countries and districts.
+     *
+     *  Once a country or district is selected, the graphs on the right hand side (pie, line and bar)
+     *  Should be updated.
+     *
+     *  The Search Box should have the same functionality but intergrated with Map so that the Map
+     *  updates on what country have been searched / selected through the Search Box.
+     **/
 
     // Set drilldown pointers
     $.each(data, function (i) {
@@ -278,19 +277,19 @@ $(function () {
                     if (!e.seriesOptions) {
 
                         var chart = this,
-                            countryCode = e.point.drilldown,
-                            mapKey = 'countries/'+countryCode+'/' + countryCode + '-all',
+                        countryCode = e.point.drilldown,
+                        mapKey = 'countries/'+countryCode+'/' + countryCode + '-all',
 
-                            // Handle error, the timeout is cleared on success
-                            fail = setTimeout(function () {
-                                if (!Highcharts.maps[mapKey]) {
-                                    chart.showLoading('<i class="icon-frown"></i> Failed loading ' + e.point.name);
+                        // Handle error, the timeout is cleared on success
+                        fail = setTimeout(function () {
+                            if (!Highcharts.maps[mapKey]) {
+                                chart.showLoading('<i class="icon-frown"></i> Failed loading ' + e.point.name);
 
-                                    fail = setTimeout(function () {
-                                        chart.hideLoading();
-                                    }, 1000);
-                                }
-                            }, 3000);
+                                fail = setTimeout(function () {
+                                    chart.hideLoading();
+                                }, 1000);
+                            }
+                        }, 3000);
 
 
                         // At this point the country code and mapkey has been determined.
@@ -338,7 +337,7 @@ $(function () {
                                 }
                             });
                         });
-                    
+			
                     }
 
                     this.setTitle(null, { text: e.point.name });
@@ -350,7 +349,7 @@ $(function () {
                     console.log("Drilled up, update charts?!")
 
                     // "reset" countrycode.
-                    dashboard = null;
+                    dashboard.countryCode = null;
 
                 }
             }
@@ -414,30 +413,131 @@ $(function () {
             }
         }
     });
+
+
+    /**
+     *  The Slider functionality.
+     *
+     *  This feature will control the time dimension of the data displayed.
+     *
+     *
+     **/
+    var months = [  "Jan", "Feb", "Mar",
+                    "Apr", "May", "Jun",
+                    "Jul", "Aug", "Sept",
+                    "Oct", "Nov", "Dec"],
+
+    /**
+     *  Functionality for rounding down to last complete month.
+     *  This makes it so that the slider scale is not assymetrical.
+     *  Waste of time to create but it annoyed me.
+     **/
+    lastFinalMonthDate = (function() {
+
+        var month = new Date().getMonth(),
+        year = (new Date().getYear() + 1900);
+
+        return new Date(year, month, 1);
+
+    })();
+
+    /**
+     *  This is where the rangeslider is created.
+     *
+     **/
+    $("#slider").dateRangeSlider({
+
+        arrows: false,
+
+        step: {
+            months: 1
+        },
+
+        bounds: {
+            min: new Date(2014, 0, 1),
+            max: lastFinalMonthDate
+        },
+
+        defaultValues: {
+            min: new Date(2014, 5, 1),
+            max: new Date(2015, 5, 1)
+        },
+
+        scales: [{
+            first: function(value){ return value; },
+
+            end: function(value) {return value; },
+
+            next: function(value){
+                var next = new Date(value);
+                return new Date(next.setMonth(value.getMonth() + 1));
+            },
+
+            label: function(value){
+                return months[value.getMonth()];
+            },
+
+            format: function(tickContainer, tickStart, tickEnd){
+                tickContainer.addClass("myCustomClass");
+            }
+        }]
+
+    });
+
+    /**
+     *  Functionality for when the values have changed.
+     *
+     *  Extracting the date objects and sending them to he updateTime function
+     **/
+    $("#slider").bind("valuesChanged", function(e, data){
+        dashboard.updateTime(data.values);
+    });
+
+
+
 });
 
 /**
  *  Main object controlling charts & information.  
  *
  *
-**/
+ **/
 function Dashboard () {
 
     this.pie = this.createPie().highcharts();
-    this.line = null;
+    this.line = this.createLine().highcharts();
     this.bar = null;
-
 
     // Current countryCode (if any);
     this.countryCode = null;
 }
 
 /**
+ *  Function that takes an object containing the new max and min date to show data from
+ *
+ **/
+Dashboard.prototype.updateTime = function (timespan) {
+
+    var startMonth = timespan.min.getMonth(),
+    startYear = timespan.min.getYear(),
+    endMonth = timespan.max.getMonth(),
+    endYear = timespan.max.getYear();
+
+
+    console.log("Update the charts to correspond with the following months/years:");
+    console.log("From month nr " + startMonth + " year " + startYear);
+    console.log("To month nr " + endMonth + " year " + endYear);
+
+    console.log("sorry lord");
+
+}
+
+/**
  * Function that takes country code and returns data for the country (or region amirite)
  *
  * BUT! As we do not have the data for any other country than Sierra Leone, we will shortcut that process.
-**/
-Dashboard.prototype.getData = function (countryCode, district) {
+ **/
+Dashboard.prototype.getPieData = function (countryCode, district) {
 
     if (district == null) {
 
@@ -445,29 +545,86 @@ Dashboard.prototype.getData = function (countryCode, district) {
     }
 
     var fakeData = [{
-                name: countryCode,
-                y: 56.33
-            }, {
-                name: district,
-                y: 24.03,
-                sliced: true,
-                selected: true
-            }, {
-                name: 'Ebola',
-                y: 10.38
-            }, {
-                name: 'Aids',
-                y: 4.77
-            }, {
-                name: 'Cancer',
-                y: 0.91
-            }, {
-                name: 'Unknown',
-                y: 0.2
-            }];
+        name: countryCode,
+        y: 56.33
+    }, {
+        name: district,
+        y: 24.03,
+        sliced: true,
+        selected: true
+    }, {
+        name: 'Ebola',
+        y: 10.38
+    }, {
+        name: 'Aids',
+        y: 4.77
+    }, {
+        name: 'Cancer',
+        y: 0.91
+    }, {
+        name: 'Unknown',
+        y: 0.2
+    }, {
+        name: 'heisann',
+        y: 22
+    }];
 
 
     console.log("Hello I want to be an AJAX call when I grow up.");
+
+    var tmpdata = $.getJSON("../data/malaria_last12_1.js", function (data) { return data });
+    console.log(tmpdata);
+
+    // creating the above JSON format from JSON files
+    var newPie = [];
+    var countryObj = new pieJSON(countryCode);
+    var districtObj = new pieJSON(district);
+    newPie.push(countryObj);
+    newPie.push(districtObj); 
+
+    getPieJSON("../data/Cholera_SL1_2.js", newPie);
+
+    return fakeData;
+}
+
+/**
+ *  Function that creates the Bar and Line specific data based on location selected.
+ *
+ *  The Bar and Line data looks different as there are multuple series instead of 4 different sets of data for each entry (each of the pizza slices).
+ *
+ **/
+Dashboard.prototype.getBarLineData = function (countryCode, district) {
+    
+    if (district == null) {
+	district = "jot";
+    };
+
+    console.log("gettin barline data for " + countryCode + " and " + district);
+
+    var fakeData = [{
+        name: countryCode,
+        data: [7.0, 6.9, 9.5, 14.5, 18.2, 21.5, 25.2, 26.5, 23.3, 18.3, 13.9, 9.6]
+    }, {
+        name: district,
+        data: [-0.2, 0.8, 5.7, 11.3, 17.0, 22.0, 24.8, 24.1, 20.1, 14.1, 8.6, 2.5]
+    }, {
+        name: 'Aids',
+        data: [-0.9, 0.6, 3.5, 8.4, 13.5, 17.0, 18.6, 17.9, 14.3, 9.0, 3.9, 1.0]
+    }, {
+        name: 'Unknown',
+        data: [3.9, 4.2, 5.7, 8.5, 11.9, 15.2, 17.0, 16.6, 14.2, 10.3, 6.6, 4.8]
+    }];
+
+
+    // creating the above JSON format from JSON files
+    var newLine = [];
+    var countryObj = new lineJSON(countryCode);
+    var districtObj = new lineJSON(district);
+
+    newLine.push(countryObj);
+    newLine.push(districtObj);
+
+    getLineJSON("../data/Cholera_SL1_2.js", newLine);
 
     return fakeData;
 
@@ -475,34 +632,51 @@ Dashboard.prototype.getData = function (countryCode, district) {
 
 /**
  *  function that updates aaaaall the charts based on country
-**/
+ *
+ *  The pie chart needs different data than the line and bar charts.
+ *  Therefore two different functions are called for getting / formatting this data.
+ *
+ **/
 Dashboard.prototype.updateCountry = function (countryCode) {
 
     this.countryCode = countryCode;
 
-    var data = this.getData(countryCode);
+    var pieData = this.getPieData(countryCode),
+    barLineData = this.getBarLineData(countryCode);
 
-    this.updatePie(data);
+    // updating the pie chhart
+    this.updatePie(pieData);
+
+    // updating the line and bar
+    this.updateBarLine(barLineData);
 
 }
 
 /**
  *  function that updates data relevant to district shit!
  * probably time to overlad.com
-**/
+ **/
 Dashboard.prototype.updateDistrict = function (district) {
 
-    var data = this.getData(this.countryCode, district);
+    var pieData = this.getPieData(this.countryCode, district),
+    barLineData = this.getBarLineData(this.countryCode, district);
 
-    this.updatePie(data);
+    // updating the pie chart
+    this.updatePie(pieData);
 
+    // updating the bar and line chart
+    this.updateBarLine(barLineData);
 }
 
 
 /**
  *  Function that handles pie chart
-**/
+ **/
 Dashboard.prototype.createPie = function () {
+
+    var url = "../data/Cholera_SL1_2.js";
+    var newPieObj = new pieJSON2();
+    getPieJSON(url, newPieObj);
 
     return $('#pie').highcharts({
         chart: {
@@ -559,20 +733,16 @@ Dashboard.prototype.createPie = function () {
 }
 
 /**
- *  updatePie
-**/
-Dashboard.prototype.updatePie = function (data) {
+ *  function that creates the line chart
+ *
+ **/
+Dashboard.prototype.createLine = function () {
 
-    console.log("the following data has been received");
-    console.log(data);
+    var url = "../data/Cholera_SL1_2.js";
+    var newLineObj = new lineJSON();
+    getLineJSON(url, newLineObj);
 
-    // Step Two, set (and redraw chart) new data to chart.
-    this.pie.series[0].setData(data);
-}
-
-// LINE
-$(function () {
-    $('#line').highcharts({
+    return $('#line').highcharts({
         title: {
             text: 'Monthly Average Deaths',
             x: -20 //center
@@ -583,7 +753,7 @@ $(function () {
         },
         xAxis: {
             categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-                'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+                         'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
         },
         yAxis: {
             title: {
@@ -618,7 +788,39 @@ $(function () {
             data: [3.9, 4.2, 5.7, 8.5, 11.9, 15.2, 17.0, 16.6, 14.2, 10.3, 6.6, 4.8]
         }]
     });
-});
+}
+
+
+/**
+ *  updatePie
+ **/
+Dashboard.prototype.updatePie = function (data) {
+
+    // Step Two, set (and redraw chart) new data to chart.
+    this.pie.series[0].setData(data);
+}
+
+/**
+ *  updateBarLine
+ **/
+Dashboard.prototype.updateBarLine = function (data) {
+
+    // Step Two, set (and redraw chart) new data to chart.
+    this.line.series[0].update({name: data[0].name}, false);
+    this.line.series[0].setData(data[0].data, false);
+
+    this.line.series[1].update({name: data[1].name}, false);
+    this.line.series[1].setData(data[1].data, false);
+
+    this.line.series[2].update({name: data[2].name}, false);
+    this.line.series[2].setData(data[2].data, false);
+
+    this.line.series[3].update({name: data[3].name}, false);
+    this.line.series[3].setData(data[3].data, false);
+
+    this.line.redraw();
+}
+
 
 // BAR
 $(function () {
@@ -688,75 +890,3 @@ $(function () {
         }]
     });
 });
-
-
-/**
- *  The Slider functionality.
- *
- *  This feature will control the time dimension of the data displayed.
- *
- *
-**/
-(function() {
-
-    var months = [  "Jan", "Feb", "Mar",
-                    "Apr", "May", "Jun",
-                    "Jul", "Aug", "Sept",
-                    "Oct", "Nov", "Dec"],
-
-        /**
-         *  Functionality for rounding down to last complete month.
-         *  This makes it so that the slider scale is not assymetrical.
-         *  Waste of time to create but it annoyed me.
-        **/
-        lastFinalMonthDate = (function() {
-
-            var month = new Date().getMonth(),
-                year = (new Date().getYear() + 1900);
-
-            return new Date(year, month, 1);
-
-        })();
-
-
-    $("#slider").dateRangeSlider({
-
-        arrows: false,
-
-        step: {
-            months: 1
-        },
-
-        bounds: {
-            min: new Date(2014, 0, 1),
-            max: lastFinalMonthDate
-        },
-
-        defaultValues: {
-            min: new Date(2014, 5, 1),
-            max: new Date(2015, 5, 1)
-        },
-
-        scales: [{
-            first: function(value){ return value; },
-
-            end: function(value) {return value; },
-
-            next: function(value){
-                var next = new Date(value);
-                return new Date(next.setMonth(value.getMonth() + 1));
-            },
-
-            label: function(value){
-                return months[value.getMonth()];
-            },
-
-            format: function(tickContainer, tickStart, tickEnd){
-                tickContainer.addClass("myCustomClass");
-            }
-        }]
-
-    });
-
-})();
-

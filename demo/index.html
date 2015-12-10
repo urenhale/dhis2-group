@@ -1,61 +1,67 @@
 <html>
-    <head>
+  <head>
+    
+    <title>Improved DHIS2 Maps</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 
     <style> 
-        #myDIV {
-        border: 1px solid black;
-        background-color: lightblue;
-        width: 300px;
-        height: 300px;
-        position: relative;
-        top: 20px;
-        }
+      #myDIV {
+      border: 1px solid black;
+      background-color: lightblue;
+      width: 300px;
+      height: 300px;
+      position: relative;
+      top: 20px;
+      }
     </style>
 
-        <!-- jQuery -->
-        <script src="http://code.jquery.com/jquery-2.1.3.js"></script>
-        <script src="external-scripts/jquery-ui.js"></script>
+    <!-- jQuery -->
+    <script src="http://code.jquery.com/jquery-2.1.3.js"></script>
+    <script src="external-scripts/jquery-ui.js"></script>
 
-        <!-- HighCharts -->
-    	<script src="https://code.highcharts.com/highcharts.js"></script>
-    	<script src="https://code.highcharts.com/maps/modules/map.js"></script>
-        <script src="https://code.highcharts.com/maps/modules/drilldown.js"></script>
-    	<script src="https://code.highcharts.com/mapdata/custom/africa.js"></script>
+    <!-- HighCharts -->
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/maps/modules/map.js"></script>
+    <script src="https://code.highcharts.com/maps/modules/drilldown.js"></script>
+    <script src="https://code.highcharts.com/mapdata/custom/africa.js"></script>
 
-        <!-- jQDateRangeSlider -->
-        <script src="external-scripts/jQDateRangeSlider-min.js"></script>
-        <script src="external-scripts/jQRuler.js"></script>
+    <!-- jQDateRangeSlider -->
+    <script src="external-scripts/jQDateRangeSlider-min.js"></script>
+    <script src="external-scripts/jQRuler.js"></script>
 
-        <!-- CSS -->
-    	<link rel="stylesheet" type="text/css" href="styles/style.css">
-        <link rel="stylesheet" type="text/css" href="styles/iThing.css">
+    <!-- CSS -->
+    <link rel="stylesheet" type="text/css" href="styles/style.css">
+    <link rel="stylesheet" type="text/css" href="styles/iThing.css">
 
-    </head>
+  </head>
 
-    <body>
-        <form id="search-form" name="search" action="/products" method="get">
-            <input id="search-input" name="search" type="text">
-            <button type="button">Search</button>
-        </form>
+  <body>
 
-        <div id="top">
-            <div id="left">
-                 <div id="map"></div>
-            </div>
-            
-            <div id="right">
-                <div id="pie"></div>
-                <div id="line"></div>
-                <div id="bar"></div>
-            </div>
+    <div id="top">
+      <div id="left">
+        <div id="center">
+          <div class="search">
+            <form action="" method="get">
+              <input type="text" name="search" placeholder="Search..."> 
+              <input type="submit" value="Search"/>
+            </form>
+          </div>
         </div>
-        <div id="bottom">
-            <div id="slider"></div>
-        </div>
-            
-    </body>
+        <div id="map"></div>
+      </div>     
+      <div id="right">
+        <div id="pie"></div>
+        <div id="line"></div>
+        <div id="bar"></div>
+      </div>
+    </div>
+    <div id="bottom">
+      <div id="slider"></div>
+    </div>
+    
+  </body>
 
-
-
-<script src="app.js"></script>
+  <script type="text/javascript" src="pieJSONFormat.js"></script>
+  <script type="text/javascript" src="lineBarJSONFormat.js"></script>
+  <script type="text/javascript" src="app.js"></script>
 </html>
