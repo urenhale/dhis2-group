@@ -256,7 +256,7 @@ $(function () {
     $("#search").click(function() { 
         var str = $("#field").val(); 
         console.log(str);
-       // alert("Handler for .click() called." + str );
+	// alert("Handler for .click() called." + str );
         return false;
     });
     
@@ -519,9 +519,14 @@ function Dashboard () {
     this.bar = null;
 
     this.pieData = [];
+    this.lineData = [];
 
     // Current countryCode (if any);
     this.countryCode = null;
+
+    this.getPieData(this.countryCode);
+    this.getBarLineData(this.countryCode);
+
 }
 
 /**
@@ -585,40 +590,36 @@ Dashboard.prototype.updatePie = function (data, redraw) {
  *
  **/
 Dashboard.prototype.getBarLineData = function (countryCode, district) {
+
+    if (district != null) {
+	console.log("update district plz");
+    }
+
+    //clearing previous lineData
+    this.lineData = [];
+
+    // getting and formatting the disease data
+    getLineJSON("../data/Cholera_SL1_2.js", "../data/Cholera_SL1_1.js", false);
+    getLineJSON("../data/Malaria_SL1_2.json", "../data/Malaria_SL1_1.json", false);
+    getLineJSON("../data/Measles_SL1_2.json", "../data/Measles_SL1_1.json", true);
+}
+
+/**
+ *  updateBarLine
+ **/
+Dashboard.prototype.updateBarLine = function (data, redraw) {
     
-    if (district == null) {
-	district = "jot";
-    };
+    this.lineData.push(data);
 
-    console.log("gettin barline data for " + countryCode + " and " + district);
-
-    var fakeData = [{
-        name: countryCode,
-        data: [7.0, 6.9, 9.5, 14.5, 18.2, 21.5, 25.2, 26.5, 23.3, 18.3, 13.9, 9.6]
-    }, {
-        name: district,
-        data: [-0.2, 0.8, 5.7, 11.3, 17.0, 22.0, 24.8, 24.1, 20.1, 14.1, 8.6, 2.5]
-    }, {
-        name: 'Aids',
-        data: [-0.9, 0.6, 3.5, 8.4, 13.5, 17.0, 18.6, 17.9, 14.3, 9.0, 3.9, 1.0]
-    }, {
-        name: 'Unknown',
-        data: [3.9, 4.2, 5.7, 8.5, 11.9, 15.2, 17.0, 16.6, 14.2, 10.3, 6.6, 4.8]
-    }];
-
-
-    // creating the above JSON format from JSON files
-    var newLine = [];
-    var countryObj = new lineJSON(countryCode);
-    var districtObj = new lineJSON(district);
-
-    newLine.push(countryObj);
-    newLine.push(districtObj);
-
-    getLineJSON("../data/Cholera_SL1_2.js", newLine);
-
-    return fakeData;
-
+    if (redraw) {
+	//console.log(JSON.stringify(this.lineData));
+	for (i = 0; i < this.lineData.length; i++) {
+	    this.line.series[i].update({name: this.lineData[i].name}, false);
+	    this.line.series[i].setData(this.lineData[i].data, false);
+	}	
+	
+	this.line.redraw();
+    }
 }
 
 /**
@@ -632,10 +633,8 @@ Dashboard.prototype.updateCountry = function (countryCode) {
 
     this.countryCode = countryCode;
 
-
     //var pieData = this.getPieData(countryCode),
-    var barLineData = this.getBarLineData(countryCode);
-
+    this.getBarLineData(countryCode);
     this.getPieData(countryCode);
 
     // updating the pie chhart
@@ -643,7 +642,7 @@ Dashboard.prototype.updateCountry = function (countryCode) {
     //this.updatePie(pieData);
 
     // updating the line and bar
-    this.updateBarLine(barLineData);
+    //this.updateBarLine(barLineData);
 
 }
 
@@ -654,15 +653,14 @@ Dashboard.prototype.updateCountry = function (countryCode) {
 Dashboard.prototype.updateDistrict = function (district) {
 
     //var pieData = this.getPieData(this.countryCode, district),
-    var barLineData = this.getBarLineData(this.countryCode, district);
-
-    this.getPieData(this.countryCode, district),
+    this.getBarLineData(this.countryCode, district);
+    this.getPieData(this.countryCode, district);
 
     // updating the pie chart
     //this.updatePie(pieData);
 
     // updating the bar and line chart
-    this.updateBarLine(barLineData);
+    //this.updateBarLine(barLineData);
 }
 
 
@@ -670,14 +668,6 @@ Dashboard.prototype.updateDistrict = function (district) {
  *  Function that handles pie chart
  **/
 Dashboard.prototype.createPie = function () {
-
-    /*
-
-    var url = "../data/Cholera_SL1_2.js";
-    var newPieObj = new pieJSON2();
-    getPieJSON(url, newPieObj);
-
-*/
 
     return $('#pie').highcharts({
         chart: {
@@ -708,27 +698,30 @@ Dashboard.prototype.createPie = function () {
         series: [{
             name: 'Diseases',
             colorByPoint: true,
-            data: [{
-                name: 'Insomnia',
-                y: 56.33
-            }, {
-                name: 'Swine Flu',
-                y: 24.03,
-                sliced: true,
-                selected: true
-            }, {
-                name: 'Ebola',
-                y: 10.38
-            }, {
-                name: 'Aids',
-                y: 4.77
-            }, {
-                name: 'Cancer',
-                y: 0.91
-            }, {
-                name: 'Unknown',
-                y: 0.2
-            }]
+	    data: []
+            /*
+	      data: [{
+              name: 'Insomnia',
+              y: 56.33
+              }, {
+              name: 'Swine Flu',
+              y: 24.03,
+              sliced: true,
+              selected: true
+              }, {
+              name: 'Ebola',
+              y: 10.38
+              }, {
+              name: 'Aids',
+              y: 4.77
+              }, {
+              name: 'Cancer',
+              y: 0.91
+              }, {
+              name: 'Unknown',
+              y: 0.2
+              }]
+	    */
         }]
     });
 }
@@ -738,10 +731,6 @@ Dashboard.prototype.createPie = function () {
  *
  **/
 Dashboard.prototype.createLine = function () {
-
-    var url = "../data/Cholera_SL1_2.js";
-    var newLineObj = new lineJSON();
-    getLineJSON(url, newLineObj);
 
     return $('#line').highcharts({
         title: {
@@ -775,6 +764,7 @@ Dashboard.prototype.createLine = function () {
             verticalAlign: 'middle',
             borderWidth: 0
         },
+	// TODO: update to be like series in createPie
         series: [{
             name: 'Ebola',
             data: [7.0, 6.9, 9.5, 14.5, 18.2, 21.5, 25.2, 26.5, 23.3, 18.3, 13.9, 9.6]
@@ -791,30 +781,9 @@ Dashboard.prototype.createLine = function () {
     });
 }
 
-/**
- *  updateBarLine
- **/
-Dashboard.prototype.updateBarLine = function (data) {
-
-    // Step Two, set (and redraw chart) new data to chart.
-    this.line.series[0].update({name: data[0].name}, false);
-    this.line.series[0].setData(data[0].data, false);
-
-    this.line.series[1].update({name: data[1].name}, false);
-    this.line.series[1].setData(data[1].data, false);
-
-    this.line.series[2].update({name: data[2].name}, false);
-    this.line.series[2].setData(data[2].data, false);
-
-    this.line.series[3].update({name: data[3].name}, false);
-    this.line.series[3].setData(data[3].data, false);
-
-    this.line.redraw();
-}
-
-
 // BAR
 $(function () {
+
     $('#bar').highcharts({
         chart: {
             type: 'column'
@@ -862,6 +831,7 @@ $(function () {
                 borderWidth: 0
             }
         },
+	// TODO: update to be like series in createPie
         series: [{
             name: 'North',
             data: [49.9, 71.5, 106.4, 129.2, 144.0, 176.0, 135.6, 148.5, 216.4, 194.1, 95.6, 54.4]
