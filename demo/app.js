@@ -1,4 +1,4 @@
- /**
+/**
  * Shorthand function for $(document).ready().
  *
  * Function is invoked once document is marked as ready by browser.
@@ -513,6 +513,7 @@ $(function () {
  **/
 function Dashboard () {
 
+    //initialize pie, line and bar charts
     this.pie = this.createPie().highcharts();
     this.line = this.createLine().highcharts();
     this.bar = null;
@@ -523,6 +524,7 @@ function Dashboard () {
     // Current countryCode (if any);
     this.countryCode = null;
 
+    // add initial data to pie chart and line/bar chart
     this.getPieData(this.countryCode);
     this.getBarLineData(this.countryCode);
 
@@ -610,15 +612,22 @@ Dashboard.prototype.getBarLineData = function (countryCode, district) {
 Dashboard.prototype.updateBarLine = function (data, redraw) {
     
     this.lineData.push(data);
-
+    
     if (redraw) {
-	//console.log(JSON.stringify(this.lineData));
-
-	//for updating the values/names of lineChart, lineData should be in correct format
-	for (i = 0; i < this.lineData.length; i++) {
-	    this.line.series[i].update({name: this.lineData[i].name}, false);
-	    this.line.series[i].setData(this.lineData[i].data, false);
-	}	
+	
+	// If initializing data for start page
+	if (this.line.series.length == 0) {
+	    for (i = 0; i < this.lineData.length; i++) {
+		this.line.addSeries(this.lineData[i]);
+	    }
+	} else {
+	    
+	    //for updating the values/names of lineChart, lineData should be in correct format
+	    for (i = 0; i < this.lineData.length; i++) {
+		this.line.series[i].update({name: this.lineData[i].name}, false);
+		this.line.series[i].setData(this.lineData[i].data, false);
+	    }
+	}
 	
 	this.line.redraw();
     }
@@ -701,29 +710,6 @@ Dashboard.prototype.createPie = function () {
             name: 'Diseases',
             colorByPoint: true,
 	    data: []
-            /*
-	      data: [{
-              name: 'Insomnia',
-              y: 56.33
-              }, {
-              name: 'Swine Flu',
-              y: 24.03,
-              sliced: true,
-              selected: true
-              }, {
-              name: 'Ebola',
-              y: 10.38
-              }, {
-              name: 'Aids',
-              y: 4.77
-              }, {
-              name: 'Cancer',
-              y: 0.91
-              }, {
-              name: 'Unknown',
-              y: 0.2
-              }]
-	    */
         }]
     });
 }
@@ -749,7 +735,7 @@ Dashboard.prototype.createLine = function () {
         },
         yAxis: {
             title: {
-                text: 'Temperature (°C)'
+                text: 'Deaths'
             },
             plotLines: [{
                 value: 0,
@@ -757,36 +743,19 @@ Dashboard.prototype.createLine = function () {
                 color: '#808080'
             }]
         },
-        tooltip: {
-            valueSuffix: 'X'
-        },
         legend: {
             layout: 'vertical',
             align: 'right',
             verticalAlign: 'middle',
             borderWidth: 0
-        },
-	// TODO: update to be like series in createPie
-        series: [{
-            name: 'Ebola',
-            data: [7.0, 6.9, 9.5, 14.5, 18.2, 21.5, 25.2, 26.5, 23.3, 18.3, 13.9, 9.6]
-        }, {
-            name: 'Cancer',
-            data: [-0.2, 0.8, 5.7, 11.3, 17.0, 22.0, 24.8, 24.1, 20.1, 14.1, 8.6, 2.5]
-        }, {
-            name: 'Aids',
-            data: [-0.9, 0.6, 3.5, 8.4, 13.5, 17.0, 18.6, 17.9, 14.3, 9.0, 3.9, 1.0]
-        }, {
-            name: 'Unknown',
-            data: [3.9, 4.2, 5.7, 8.5, 11.9, 15.2, 17.0, 16.6, 14.2, 10.3, 6.6, 4.8]
-        }]
+        }
     });
 }
 
 /**
  * Function that creates the bar chart
- *
- * TODO: should use line chart functions
+ * Might need to make another set of JSON formatting functions, since this is avg births
+ * TODO: should use line chart functions?
  **/
 $(function () {
 
@@ -826,7 +795,7 @@ $(function () {
         tooltip: {
             headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
             pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
-                '<td style="padding:0"><b>{point.y:.1f} mm</b></td></tr>',
+                '<td style="padding:0"><b>{point.y:.1f}</b></td></tr>',
             footerFormat: '</table>',
             shared: true,
             useHTML: true
