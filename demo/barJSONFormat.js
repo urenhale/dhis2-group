@@ -12,7 +12,7 @@ function getBarJSON(birthData, areaInfo, redraw) {
 	this.name = name;
 	this.data = [];
     }, 
-    // need to sort the JSON data in data, months aren't sorted
+    // need to sort the JSON data in data, months aren't sorted, maybe do this in JSON file get?
     formatBarJSON = function(data) {
 	var newAreaObj = new barJSON(data.rows[0][0]);
 

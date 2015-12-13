@@ -264,13 +264,13 @@ $(function () {
     $("#mapDropdown").append(mapOptions);
     
     $("#mapDropdown").change(function () {
-        var $selectedItem = $("option:selected", this);
-	dashboard.updateCountry($selectedItem['0'].value);
+        var selectedItem = $("option:selected", this);
+	dashboard.updateCountry(selectedItem['0'].value);
 
-	console.log($selectedItem['0'].value);
+	console.log(selectedItem['0'].value);
 	
-	var mapKey = 'countries/'+$selectedItem['0'].value+'/' + $selectedItem['0'].value + '-all';
-	updateMap(mapKey, $selectedItem.text());
+	var mapKey = 'countries/'+selectedItem['0'].value+'/' + selectedItem['0'].value + '-all';
+	updateMap(mapKey, selectedItem.text());
     });
     
     function updateMap(mapKey, name){
@@ -429,7 +429,7 @@ $(function () {
                     }
 		}
             }
-	})
+	});
 	
 	console.log("HI")
 	console.log(Highcharts.geojson(Highcharts.maps[mapKey]))
@@ -758,7 +758,7 @@ Dashboard.prototype.getPieData = function (countryCode, district) {
 
     // getting and formatting the disease data!
     getPieJSON("../data/Cholera_SL1_2.js", "../data/Cholera_SL1_1.js", false);
-    getPieJSON("../data/Malaria_SL1_2.json", "../data/Malaria_SL1_1.json", false);
+    //getPieJSON("../data/Malaria_SL1_2.json", "../data/Malaria_SL1_1.json", false);
     getPieJSON("../data/Measles_SL1_2.json", "../data/Measles_SL1_1.json", true);
 
 }
@@ -773,6 +773,8 @@ Dashboard.prototype.updatePie = function (data, redraw) {
     if (redraw) {
 	// updating this array last, pieData should be in the correct format from getPieJSON!
         this.pie.series[0].setData(this.pieData);
+
+//	this.getLineData(this.countryCode);
     }
 }
 
@@ -795,7 +797,7 @@ Dashboard.prototype.getLineData = function (countryCode, district) {
 
     // getting and formatting the disease data
     getLineJSON("../data/Cholera_SL1_2.js", "../data/Cholera_SL1_1.js", false);
-    getLineJSON("../data/Malaria_SL1_2.json", "../data/Malaria_SL1_1.json", false);
+    //getLineJSON("../data/Malaria_SL1_2.json", "../data/Malaria_SL1_1.json", false);
     getLineJSON("../data/Measles_SL1_2.json", "../data/Measles_SL1_1.json", true);
 }
 
@@ -822,6 +824,8 @@ Dashboard.prototype.updateLine = function (data, redraw) {
 	}
 	
 	this.line.redraw();
+	
+//	this.getBarData(this.countryCode);
     }
 }
 
@@ -843,7 +847,7 @@ Dashboard.prototype.getBarData = function (countryCode, district) {
 
     // getting and formatting the disease data
     getBarJSON("../data/Cholera_SL1_2.js", "../data/Cholera_SL1_1.js", false);
-    getBarJSON("../data/Malaria_SL1_2.json", "../data/Malaria_SL1_1.json", false);
+    //getBarJSON("../data/Malaria_SL1_2.json", "../data/Malaria_SL1_1.json", false);
     getBarJSON("../data/Measles_SL1_2.json", "../data/Measles_SL1_1.json", true);
 }
 
@@ -855,7 +859,10 @@ Dashboard.prototype.updateBar = function (data, redraw) {
     this.barData.push(data);
     
     if (redraw) {
-	
+
+	console.log(this.bar.series.length);
+	console.log(this.barData.length);
+
 	// If initializing data for start page
 	if (this.bar.series.length == 0) {
 	    for (i = 0; i < this.barData.length; i++) {
@@ -884,8 +891,8 @@ Dashboard.prototype.updateCountry = function (countryCode) {
 
     this.countryCode = countryCode;
 
-    this.getLineData(countryCode);
     this.getPieData(countryCode);
+    this.getLineData(countryCode);
     this.getBarData(countryCode);
 }
 
@@ -895,8 +902,8 @@ Dashboard.prototype.updateCountry = function (countryCode) {
  **/
 Dashboard.prototype.updateDistrict = function (district) {
 
-    this.getLineData(this.countryCode, district);
     this.getPieData(this.countryCode, district);
+    this.getLineData(this.countryCode, district);
     this.getBarData(this.countryCode, district);
 }
 
