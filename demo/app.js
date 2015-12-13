@@ -6,8 +6,6 @@
 
 // temporary global variable
 var dashboard;
-var startTime = 0;
-var endTime = 11;
 
 $(function () {
 
@@ -637,8 +635,8 @@ $(function () {
         },
 
         bounds: {
-            min: new Date(2015, 0, 1),
-            max: new Date(2015,11, 1)
+            min: dashboard.boundMin,
+            max: dashboard.boundMax
         },
 
         // Picking up defeaultValeus from dashboard object
@@ -696,9 +694,18 @@ function Dashboard () {
     this.lineData = [];
     this.barData = [];
 
-    // Default values for date
-    this.timeMin = new Date(2015, 5, 1);
-    this.timeMax = new Date(2015, 9, 1);
+    // Default values for date. These should be dynamic in future versions!
+    // That means updating the initial charts accordingly to these values.
+    this.boundMin = new Date(2015, 0, 1);
+    this.boundMax = new Date(2015, 11, 1);
+    this.timeMin = new Date(2015, 0, 1);
+    this.timeMax = new Date(2015, 11, 1);
+
+
+    // Stored values regarding the timeslide
+    // defaulf being end and start of year (should be dynamic based on input as above).
+    this.monthStart = 0;
+    this.monthEnd = 11;
 
     // Current countryCode (if any);
     this.countryCode = null;
@@ -716,24 +723,13 @@ function Dashboard () {
  **/
 Dashboard.prototype.updateTime = function (timespan) {
 
-    var startMonth = timespan.min.getMonth(),
-        startYear = timespan.min.getYear(),
-        endMonth = timespan.max.getMonth(),
-        endYear = timespan.max.getYear();
-	
-	startTime = startMonth;
-	endTime = endMonth;
+    this.monthStart = timespan.min.getMonth();
+    this.monthEnd = timespan.max.getMonth();
 
+    // Getting and in turn updating our three charts.
 	this.getLineData(this.countryCode);
 	this.getBarData(this.countryCode);
 	this.getPieData(this.countryCode);
-	
-
-
-    console.log("Update the charts to correspond with the following months/years:");
-	console.log(startYear);
-    console.log("From month nr " + startMonth + " year " + startYear);
-    console.log("To month nr " + endMonth + " year " + endYear);
 
 }
 
@@ -763,7 +759,6 @@ Dashboard.prototype.getPieData = function (countryCode, district) {
  *  updatePie
  **/
 Dashboard.prototype.updatePie = function (data, redraw) {
-	
 	
 
 	console.log(data);
@@ -817,8 +812,10 @@ Dashboard.prototype.updateLine = function (data, redraw) {
                 'Oct',
                 'Nov',
                 'Dec'
-            ];
-    
+            ],
+        startTime = this.monthStart,
+        endTime = this.monthEnd;
+
 	data['data'] = data['data'].slice(startTime, endTime);
 	this.line.xAxis[0].setCategories(categories.slice(startTime, endTime));
     this.lineData.push(data);
@@ -867,6 +864,7 @@ Dashboard.prototype.getBarData = function (countryCode, district) {
  *  updateBar
  **/
 Dashboard.prototype.updateBar = function (data, redraw) {
+
     var  categories = [
                 'Jan',
                 'Feb',
@@ -880,7 +878,9 @@ Dashboard.prototype.updateBar = function (data, redraw) {
                 'Oct',
                 'Nov',
                 'Dec'
-            ];
+            ],
+        startTime = this.monthStart,
+        endTime = this.monthEnd;
     
 	data['data'] = data['data'].slice(startTime, endTime);
 	this.bar.xAxis[0].setCategories(categories.slice(startTime, endTime));	
