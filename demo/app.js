@@ -609,23 +609,67 @@ $(function () {
         }
     });
 
+});
 
-    /**
-     *  The Slider functionality.
-     *
-     *  This feature will control the time dimension of the data displayed.
-     *
-     *
-     **/
+/**
+ *  Main object controlling charts & information.  
+ *
+ *
+ **/
+function Dashboard () {
+
+    // Default values for date. These should be dynamic in future versions!
+    // That means updating the initial charts accordingly to these values.
+    this.boundMin = new Date(2015, 0, 1);
+    this.boundMax = new Date(2015, 11, 1);
+    this.timeMin = new Date(2015, 0, 1);
+    this.timeMax = new Date(2015, 11, 1);
+
+    //initialize pie, line and bar charts
+    this.pie = this.createPie().highcharts();
+    this.line = this.createLine(0, 11).highcharts();
+    this.bar = this.createBar().highcharts();
+
+    // initializing the slider
+    this.createSlider();
+
+    this.pieData = [];
+    this.lineData = [];
+    this.barData = [];
+
+    // Stored values regarding the timeslide
+    // defaulf being end and start of year (should be dynamic based on input as above).
+    this.monthStart = 0;
+    this.monthEnd = 11;
+
+    // Current countryCode (if any);
+    this.countryCode = null;
+
+    // add initial data to pie chart and line/bar chart
+    this.getPieData(this.countryCode);
+    this.getLineData(this.countryCode);
+    this.getBarData(this.countryCode);
+
+}
+
+/**
+ *  The Slider functionality.
+ *
+ *  This feature will control the time dimension of the data displayed.
+ *
+ *
+ **/
+Dashboard.prototype.createSlider = function () {
+
+    // Strings used for the scale
     var months = [  "Jan", "Feb", "Mar",
                     "Apr", "May", "Jun",
                     "Jul", "Aug", "Sept",
-                    "Oct", "Nov", "Dec"];
+                    "Oct", "Nov", "Dec"],
 
-    /**
-     *  This is where the rangeslider is created.
-     *
-     **/
+        that = this;
+
+    // Initiating slider!
     $("#slider").dateRangeSlider({
 
         arrows: false,
@@ -635,14 +679,14 @@ $(function () {
         },
 
         bounds: {
-            min: dashboard.boundMin,
-            max: dashboard.boundMax
+            min: that.boundMin,
+            max: that.boundMax
         },
 
-        // Picking up defeaultValeus from dashboard object
+        // Picking up defeaultValeus from dashboard 
         defaultValues: {
-            min: dashboard.timeMin,
-            max: dashboard.timeMax
+            min: that.timeMin,
+            max: that.timeMax
         },
 
         scales: [{
@@ -666,55 +710,13 @@ $(function () {
 
     });
 
-    /**
-     *  Functionality for when the values have changed.
-     *
-     *  Extracting the date objects and sending them to he updateTime function
-     **/
+     // Functionality for when the slider is manipulated
+     //
+     //  Extracting the date objects and sending them to he updateTime function
     $("#slider").bind("valuesChanged", function(e, data){
 
         dashboard.updateTime(data.values);
     });
-
-});
-
-/**
- *  Main object controlling charts & information.  
- *
- *
- **/
-function Dashboard () {
-
-    //initialize pie, line and bar charts
-    this.pie = this.createPie().highcharts();
-    this.line = this.createLine(0, 11).highcharts();
-    this.bar = this.createBar().highcharts();
-
-    this.pieData = [];
-    this.lineData = [];
-    this.barData = [];
-
-    // Default values for date. These should be dynamic in future versions!
-    // That means updating the initial charts accordingly to these values.
-    this.boundMin = new Date(2015, 0, 1);
-    this.boundMax = new Date(2015, 11, 1);
-    this.timeMin = new Date(2015, 0, 1);
-    this.timeMax = new Date(2015, 11, 1);
-
-
-    // Stored values regarding the timeslide
-    // defaulf being end and start of year (should be dynamic based on input as above).
-    this.monthStart = 0;
-    this.monthEnd = 11;
-
-    // Current countryCode (if any);
-    this.countryCode = null;
-
-    // add initial data to pie chart and line/bar chart
-    this.getPieData(this.countryCode);
-    this.getLineData(this.countryCode);
-    this.getBarData(this.countryCode);
-
 }
 
 /**
@@ -783,7 +785,7 @@ Dashboard.prototype.updatePie = function (data, redraw) {
 Dashboard.prototype.getLineData = function (countryCode, district) {
 
     if (district != null) {
-	console.log("update district plz");
+	   console.log("update district plz");
     }
 
     //clearing previous lineData

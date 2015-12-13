@@ -26,9 +26,6 @@ function getPieJSON(diseaseData, diseaseInfo, redraw) {
             yv1 = 201501 + dashboard.monthStart,
             yv2 = 201501 + dashboard.monthEnd;
 
-
-
-
         // summing the data points for the disease
         // skip value if out of bounds
         $.each(data.rows, function(key, val) {
@@ -38,7 +35,6 @@ function getPieJSON(diseaseData, diseaseInfo, redraw) {
             if (date > yv1 && date < yv2) {
                 newDiseaseObj.y += Number(val[2]);
             }
-
         });
 
         // Finding disease name
