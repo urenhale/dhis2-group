@@ -432,9 +432,6 @@ $(function () {
 		}
             }
 	});
-	
-	console.log("HI")
-	console.log(Highcharts.geojson(Highcharts.maps[mapKey]))
 	this.drilldown = this['hc-key'];
         this.value = this['value'];
 	console.log(this.drilldownSeries)
@@ -654,13 +651,13 @@ $(function () {
         },
 
         bounds: {
-            min: new Date(2014, 0, 1),
-            max: lastFinalMonthDate
+            min: new Date(2015, 0, 1),
+            max: new Date(2015,11, 1)
         },
 
         defaultValues: {
-            min: new Date(2014, 5, 1),
-            max: new Date(2015, 5, 1)
+            min: new Date(2015, 0, 1),
+            max: new Date(2015, 11, 1)
         },
 
         scales: [{
@@ -737,6 +734,9 @@ Dashboard.prototype.updateTime = function (timespan) {
 	startTime = startMonth;
 	endTime = endMonth;
 	this.getLineData(this.countryCode);
+	this.getBarData(this.countryCode);
+	this.getPieData(this.countryCode);
+	
 
 
     console.log("Update the charts to correspond with the following months/years:");
@@ -774,7 +774,10 @@ Dashboard.prototype.getPieData = function (countryCode, district) {
  *  updatePie
  **/
 Dashboard.prototype.updatePie = function (data, redraw) {
+	
+	
 
+	console.log(data);
     this.pieData.push(data);
 
     if (redraw) {
@@ -827,9 +830,6 @@ Dashboard.prototype.updateLine = function (data, redraw) {
                 'Dec'
             ];
     
-	console.log("start: " + startTime);
-	console.log("end: " + endTime);
-	console.log(data);
 	data['data'] = data['data'].slice(startTime, endTime);
 	this.line.xAxis[0].setCategories(categories.slice(startTime, endTime));
     this.lineData.push(data);
@@ -878,7 +878,23 @@ Dashboard.prototype.getBarData = function (countryCode, district) {
  *  updateBar
  **/
 Dashboard.prototype.updateBar = function (data, redraw) {
+    var  categories = [
+                'Jan',
+                'Feb',
+                'Mar',
+                'Apr',
+                'May',
+                'Jun',
+                'Jul',
+                'Aug',
+                'Sep',
+                'Oct',
+                'Nov',
+                'Dec'
+            ];
     
+	data['data'] = data['data'].slice(startTime, endTime);
+	this.bar.xAxis[0].setCategories(categories.slice(startTime, endTime));	
     this.barData.push(data);
     
     if (redraw) {
