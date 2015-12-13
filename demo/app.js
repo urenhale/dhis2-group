@@ -15,8 +15,6 @@ $(function () {
     /**
      *  All the shit beneath this line is essentially legacy shit.
      **/
-	 
-	 
 
 
     // Preparing demo data.
@@ -26,12 +24,10 @@ $(function () {
     var data = [
         {
             "hc-key": "ug",
-			"cName": "Uganda",
             "value": 0
         },
         {
             "hc-key": "ng",
-			"cName": "Nigeria",
             "value": 1
         },
         {
@@ -255,10 +251,7 @@ $(function () {
             "value": 56
         }
     ];
-<<<<<<< HEAD
 	
-	
-	//populate dropdown
 	var mapOptions;
 	var mapCount = 0;
 
@@ -442,8 +435,6 @@ $(function () {
 		console.log(this.drilldownSeries)
 	}
    
-	
-=======
 
     $("#search").click(function() { 
         var str = $("#field").val(); 
@@ -452,7 +443,6 @@ $(function () {
         return false;
     });
     
->>>>>>> 8d7e98216f3180484fa07d04537516c213a16381
     /**
      *  The Map will mainly serve as a way to navigate / select countries and districts.
      *
@@ -472,6 +462,7 @@ $(function () {
 
     // Initiate the chart
     $('#map').highcharts('Map', {
+
         chart : {
             events: {
                 drilldown: function (e) {
@@ -537,9 +528,7 @@ $(function () {
                                     enabled: true,
                                     format: '{point.name}'
                                 }
-                            
-							
-							});
+                            });
                         });
 			
                     }
@@ -1020,5 +1009,4 @@ $(function () {
 
         }]
     });
-		
 });
