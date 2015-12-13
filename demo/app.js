@@ -283,17 +283,7 @@ $(function () {
 	    changeMap(mapKey, name)
 	});
     }
-
-    // Switch to previous map                                                                                        
-    $("#prevMap").click(function () {
-    $("#mapDropdown option:selected").prev("option").prop("selected", true).change();
-    });
-
-    // Switch to next map                                                                                        
-    $("#nextMap").click(function () {
-    $("#mapDropdown option:selected").next("option").prop("selected", true).change();
-    });
-
+    
     function changeMap(mapKey, name){
 	console.log("changing map")
 	console.log(Highcharts.maps['mapKey'])
