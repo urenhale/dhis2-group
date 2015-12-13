@@ -1,5 +1,5 @@
 /**
- * Methods for getting the correct JSON data for our line and bar charts.
+ * Methods for getting the correct JSON data for our line charts.
  * 
  **/
 function getLineJSON(diseaseData, diseaseInfo, redraw) {
@@ -44,6 +44,6 @@ function getLineJSON(diseaseData, diseaseInfo, redraw) {
     addLineData = function(diseaseObj) {
 	console.log(diseaseObj);
 
-	dashboard.updateBarLine(diseaseObj, redraw);
+	dashboard.updateLine(diseaseObj, redraw);
     };
 };

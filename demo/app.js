@@ -251,189 +251,193 @@ $(function () {
             "value": 56
         }
     ];
-	
-	var mapOptions;
-	var mapCount = 0;
+    
+    var mapOptions;
+    var mapCount = 0;
 
-	$.each(Highcharts.maps, function (mapGroup, maps) {
-		$.each(maps['features'], function(){
-			mapOptions += '<option value=' + this['properties']['hc-key'] +'>' + this['properties']['name'] + '</option>';
-        })
+    $.each(Highcharts.maps, function (mapGroup, maps) {
+	$.each(maps['features'], function(){
+	    mapOptions += '<option value=' + this['properties']['hc-key'] +'>' + this['properties']['name'] + '</option>';
+	});
     });
-
+    
     $("#mapDropdown").append(mapOptions);
+    
+    $("#mapDropdown").change(function () {
+        var $selectedItem = $("option:selected", this);
+	dashboard.updateCountry($selectedItem['0'].value);
+
+	console.log($selectedItem['0'].value);
 	
-	$("#mapDropdown").change(function () {
-        var $selectedItem = $("option:selected", this)
-		dashboard.updateCountry($selectedItem['0'].value);
-		console.log($selectedItem['0'].value)
-		
-		var mapKey =  mapKey = 'countries/'+$selectedItem['0'].value+'/' + $selectedItem['0'].value + '-all'
-		updateMap(mapKey, $selectedItem.text());
-		
+	var mapKey = 'countries/'+$selectedItem['0'].value+'/' + $selectedItem['0'].value + '-all';
+	updateMap(mapKey, $selectedItem.text());
+    });
+    
+    function updateMap(mapKey, name){
+	Highcharts.getScript('https://code.highcharts.com/mapdata/' + mapKey + '.js', function(){
+
+	    console.log(Highcharts.maps)
+
+	    changeMap(mapKey, name)
+	});
+    }
+
+    function changeMap(mapKey, name){
+	console.log("changing map")
+	console.log(Highcharts.maps['mapKey'])
+
+	$('#map').highcharts('Map', {
+	    chart : {
+		events: {
+                    drilldown: function (e) {
+			if (!e.seriesOptions) {
+
+                            var chart = this,
+                            countryCode = e.point.drilldown,
+                            mapKey = 'countries/'+countryCode+'/' + countryCode + '-all',
+
+                            // Handle error, the timeout is cleared on success
+                            fail = setTimeout(function () {
+				if (!Highcharts.maps[mapKey]) {
+                                    chart.showLoading('<i class="icon-frown"></i> Failed loading ' + e.point.name);
+
+                                    fail = setTimeout(function () {
+					chart.hideLoading();
+                                    }, 1000);
+				}
+                            }, 3000);
+
+                            // At this point the country code and mapkey has been determined.
+                            // Will use the country code and send it to the functionality that handles chart update!
+                            dashboard.updateCountry(countryCode);
+
+                            // Show the spinner
+                            chart.showLoading('<i class="icon-spinner icon-spin icon-3x"></i>'); // Font Awesome spinner
+
+                            // Load the drilldown map
+                            $.getScript('https://code.highcharts.com/mapdata/' + mapKey + '.js', function () {
+
+				data = Highcharts.geojson(Highcharts.maps[mapKey]);
+
+				// Set a non-random bogus value
+				$.each(data, function (i) {
+                                    this.value = i;
+				});
+
+				// Hide loading and add series
+				chart.hideLoading();
+				clearTimeout(fail);
+				chart.addSeriesAsDrilldown(e.point, {
+                                    name: e.point.name,
+                                    data: data,
+                                    allowPointSelect: true,
+                                    cursor: 'pointer',
+                                    states: {
+					select: {
+                                            color: '#a4edba',
+                                            borderColor: 'black',
+                                            dashStyle: 'shortdot'
+					}
+                                    },
+                                    point: {
+					events: {
+                                            click: function() {
+						dashboard.updateDistrict(this.name);
+                                            }
+					}
+                                    },
+                                    dataLabels: {
+					enabled: true,
+					format: '{point.name}'
+                                    }
+				    
+				    
+				});
+                            });
+			    
+			}
+
+			this.setTitle(null, { text: e.point.name });
+                    },
+                    drillup: function () {
+			this.setTitle(null, { text: 'Africa' });
+
+			// Drilled up and loaded what? nothing?
+			console.log("Drilled up, update charts?!")
+
+			// "reset" countrycode.
+			dashboard.countryCode = null;
+
+                    }
+		}
+            },
+
+            title : {
+		text : name
+            },
+
+            subtitle : {
+		text : 'Click to display data'
+            },
+
+            mapNavigation: {
+		enabled: true,
+		buttonOptions: {
+                    verticalAlign: 'bottom'
+		}
+            },
+
+            colorAxis: {
+		min: 0
+            },
+
+            mapNavigation: {
+		enabled: true,
+		buttonOptions: {
+                    verticalAlign: 'bottom'
+		}
+            },
+
+            series : [{
+		data : Highcharts.geojson(Highcharts.maps[mapKey]),
+		mapData: Highcharts.maps[mapKey],
+		joinBy: 'name',
+		name: 'name',
+		states: {
+                    hover: {
+			color: '#BADA55'
+                    }
+		},
+		dataLabels: {
+                    enabled: true,
+                    format: '{point.name}'
+		}
+            }],
+
+            drilldown: {
+		//series: drilldownSeries,
+		activeDataLabelStyle: {
+                    color: '#FFFFFF',
+                    textDecoration: 'none',
+                    textShadow: '0 0 3px #000000'
+		},
+		drillUpButton: {
+                    relativeTo: 'spacingBox',
+                    position: {
+			x: 0,
+			y: 60
+                    }
+		}
+            }
 	})
 	
-	function updateMap(mapKey, name){
-		Highcharts.getScript('https://code.highcharts.com/mapdata/' + mapKey + '.js', function(){
-			console.log(Highcharts.maps)
-			changeMap(mapKey, name)
-			});
-	}
-
-	function changeMap(mapKey, name){
-		console.log("changing map")
-		console.log(Highcharts.maps['mapKey'])
-		$('#map').highcharts('Map', {
-			chart : {
-            events: {
-                drilldown: function (e) {
-                    if (!e.seriesOptions) {
-
-                        var chart = this,
-                        countryCode = e.point.drilldown,
-                        mapKey = 'countries/'+countryCode+'/' + countryCode + '-all',
-
-                        // Handle error, the timeout is cleared on success
-                        fail = setTimeout(function () {
-                            if (!Highcharts.maps[mapKey]) {
-                                chart.showLoading('<i class="icon-frown"></i> Failed loading ' + e.point.name);
-
-                                fail = setTimeout(function () {
-                                    chart.hideLoading();
-                                }, 1000);
-                            }
-                        }, 3000);
-
-
-                        // At this point the country code and mapkey has been determined.
-                        // Will use the country code and send it to the functionality that handles chart update!
-                        dashboard.updateCountry(countryCode);
-
-                        // Show the spinner
-                        chart.showLoading('<i class="icon-spinner icon-spin icon-3x"></i>'); // Font Awesome spinner
-
-                        // Load the drilldown map
-                        $.getScript('https://code.highcharts.com/mapdata/' + mapKey + '.js', function () {
-
-                            data = Highcharts.geojson(Highcharts.maps[mapKey]);
-
-                            // Set a non-random bogus value
-                            $.each(data, function (i) {
-                                this.value = i;
-                            });
-
-                            // Hide loading and add series
-                            chart.hideLoading();
-                            clearTimeout(fail);
-                            chart.addSeriesAsDrilldown(e.point, {
-                                name: e.point.name,
-                                data: data,
-                                allowPointSelect: true,
-                                cursor: 'pointer',
-                                states: {
-                                    select: {
-                                        color: '#a4edba',
-                                        borderColor: 'black',
-                                        dashStyle: 'shortdot'
-                                    }
-                                },
-                                point: {
-                                    events: {
-                                        click: function() {
-                                            dashboard.updateDistrict(this.name);
-                                        }
-                                    }
-                                },
-                                dataLabels: {
-                                    enabled: true,
-                                    format: '{point.name}'
-                                }
-							});
-                        });
-			
-                    }
-
-                    this.setTitle(null, { text: e.point.name });
-                },
-                drillup: function () {
-                    this.setTitle(null, { text: 'Africa' });
-
-                    // Drilled up and loaded what? nothing?
-                    console.log("Drilled up, update charts?!")
-
-                    // "reset" countrycode.
-                    dashboard.countryCode = null;
-
-                }
-            }
-        },
-
-        title : {
-            text : name
-        },
-
-        subtitle : {
-            text : 'Click to display data'
-        },
-
-        mapNavigation: {
-            enabled: true,
-            buttonOptions: {
-                verticalAlign: 'bottom'
-            }
-        },
-
-        colorAxis: {
-            min: 0
-        },
-
-        mapNavigation: {
-            enabled: true,
-            buttonOptions: {
-                verticalAlign: 'bottom'
-            }
-        },
-
-        series : [{
-            data : Highcharts.geojson(Highcharts.maps[mapKey]),
-            mapData: Highcharts.maps[mapKey],
-            joinBy: 'name',
-            name: 'name',
-            states: {
-                hover: {
-                    color: '#BADA55'
-                }
-            },
-            dataLabels: {
-                enabled: true,
-                format: '{point.name}'
-            }
-        }],
-
-        drilldown: {
-            //series: drilldownSeries,
-            activeDataLabelStyle: {
-                color: '#FFFFFF',
-                textDecoration: 'none',
-                textShadow: '0 0 3px #000000'
-            },
-            drillUpButton: {
-                relativeTo: 'spacingBox',
-                position: {
-                    x: 0,
-                    y: 60
-                }
-            }
-        }
-		})
-		
-		console.log("HI")
-		console.log(Highcharts.geojson(Highcharts.maps[mapKey]))
-		this.drilldown = this['hc-key'];
+	console.log("HI")
+	console.log(Highcharts.geojson(Highcharts.maps[mapKey]))
+	this.drilldown = this['hc-key'];
         this.value = this['value'];
-		console.log(this.drilldownSeries)
-	}
-   
+	console.log(this.drilldownSeries)
+    }
+    
 
     $("#search").click(function() { 
         var str = $("#field").val(); 
@@ -457,7 +461,6 @@ $(function () {
         this.drilldown = this['hc-key'];
         this.value = this['value'];
     });
-
 
     // Initiate the chart
     $('#map').highcharts('Map', {
@@ -540,9 +543,12 @@ $(function () {
                     // Drilled up and loaded what? nothing?
                     console.log("Drilled up, update charts?!")
 
+		    dashboard.getPieData(dashboard.countryCode);
+		    dashboard.getLineData(dashboard.countryCode);
+		    dashboard.getBarData(dashboard.countryCode);
+
                     // "reset" countrycode.
                     dashboard.countryCode = null;
-
                 }
             }
         },
@@ -699,17 +705,19 @@ function Dashboard () {
     //initialize pie, line and bar charts
     this.pie = this.createPie().highcharts();
     this.line = this.createLine().highcharts();
-    this.bar = null;
+    this.bar = this.createBar().highcharts();
 
     this.pieData = [];
     this.lineData = [];
+    this.barData = [];
 
     // Current countryCode (if any);
     this.countryCode = null;
 
     // add initial data to pie chart and line/bar chart
     this.getPieData(this.countryCode);
-    this.getBarLineData(this.countryCode);
+    this.getLineData(this.countryCode);
+    this.getBarData(this.countryCode);
 
 }
 
@@ -729,19 +737,20 @@ Dashboard.prototype.updateTime = function (timespan) {
     console.log("From month nr " + startMonth + " year " + startYear);
     console.log("To month nr " + endMonth + " year " + endYear);
 
-   // console.log("sorry lord");
+    console.log("sorry lord");
 
 }
 
 /**
  * Function that takes country code and returns data for the country (or region amirite)
- *
+ * 
+ * Should get JSON from the DHIS2 API, but we haven't done that yet.
  * BUT! As we do not have the data for any other country than Sierra Leone, we will shortcut that process.
  **/
 Dashboard.prototype.getPieData = function (countryCode, district) {
 
     if (district != null) {
-        console.log("fuckin update some district shiet br9");
+        console.log("update district");
     }
 
     // clearing prevoiuos piedata
@@ -762,19 +771,20 @@ Dashboard.prototype.updatePie = function (data, redraw) {
     this.pieData.push(data);
 
     if (redraw) {
-	// updating this array last, pieData should be in the correct format
+	// updating this array last, pieData should be in the correct format from getPieJSON!
         this.pie.series[0].setData(this.pieData);
     }
 }
 
 
 /**
- *  Function that creates the Bar and Line specific data based on location selected.
+ *  Function that creates the Line specific data based on location selected.
  *
  *  The Bar and Line data looks different as there are multuple series instead of 4 different sets of data for each entry (each of the pizza slices).
  *
+ * Should get JSON from the DHIS2 API, but we haven't done that yet.
  **/
-Dashboard.prototype.getBarLineData = function (countryCode, district) {
+Dashboard.prototype.getLineData = function (countryCode, district) {
 
     if (district != null) {
 	console.log("update district plz");
@@ -790,9 +800,9 @@ Dashboard.prototype.getBarLineData = function (countryCode, district) {
 }
 
 /**
- *  updateBarLine
+ *  updateLine
  **/
-Dashboard.prototype.updateBarLine = function (data, redraw) {
+Dashboard.prototype.updateLine = function (data, redraw) {
     
     this.lineData.push(data);
     
@@ -804,8 +814,7 @@ Dashboard.prototype.updateBarLine = function (data, redraw) {
 		this.line.addSeries(this.lineData[i]);
 	    }
 	} else {
-	    
-	    //for updating the values/names of lineChart, lineData should be in correct format
+	    //for updating the values/names of lineChart, lineData should be in correct format from getLineJSON
 	    for (i = 0; i < this.lineData.length; i++) {
 		this.line.series[i].update({name: this.lineData[i].name}, false);
 		this.line.series[i].setData(this.lineData[i].data, false);
@@ -813,6 +822,54 @@ Dashboard.prototype.updateBarLine = function (data, redraw) {
 	}
 	
 	this.line.redraw();
+    }
+}
+
+/**
+ *  Function that creates the Bar specific data based on location selected.
+ *
+ *  The Bar and Line data looks different as there are multuple series instead of 4 different sets of data for each entry (each of the pizza slices).
+ *
+ * Should get JSON from the DHIS2 API, but we haven't done that yet.
+ **/
+Dashboard.prototype.getBarData = function (countryCode, district) {
+
+    if (district != null) {
+	console.log("update district plz");
+    }
+
+    //clearing previous lineData
+    this.barData = [];
+
+    // getting and formatting the disease data
+    getBarJSON("../data/Cholera_SL1_2.js", "../data/Cholera_SL1_1.js", false);
+    getBarJSON("../data/Malaria_SL1_2.json", "../data/Malaria_SL1_1.json", false);
+    getBarJSON("../data/Measles_SL1_2.json", "../data/Measles_SL1_1.json", true);
+}
+
+/**
+ *  updateBar
+ **/
+Dashboard.prototype.updateBar = function (data, redraw) {
+    
+    this.barData.push(data);
+    
+    if (redraw) {
+	
+	// If initializing data for start page
+	if (this.bar.series.length == 0) {
+	    for (i = 0; i < this.barData.length; i++) {
+		this.bar.addSeries(this.barData[i]);
+	    }
+	} else {
+	    //for updating the values/names of barChart, barData should be in correct format from getBarJSON
+	    for (i = 0; i < this.barData.length; i++) {
+		this.bar.series[i].update({name: this.barData[i].name}, false);
+		this.bar.series[i].setData(this.barData[i].data, false);
+	    }
+	}
+	
+	this.bar.redraw();
     }
 }
 
@@ -827,17 +884,9 @@ Dashboard.prototype.updateCountry = function (countryCode) {
 
     this.countryCode = countryCode;
 
-    //var pieData = this.getPieData(countryCode),
-    this.getBarLineData(countryCode);
+    this.getLineData(countryCode);
     this.getPieData(countryCode);
-
-    // updating the pie chhart
-    // call this from new funcitonality
-    //this.updatePie(pieData);
-
-    // updating the line and bar
-    //this.updateBarLine(barLineData);
-
+    this.getBarData(countryCode);
 }
 
 /**
@@ -846,15 +895,9 @@ Dashboard.prototype.updateCountry = function (countryCode) {
  **/
 Dashboard.prototype.updateDistrict = function (district) {
 
-    //var pieData = this.getPieData(this.countryCode, district),
-    this.getBarLineData(this.countryCode, district);
+    this.getLineData(this.countryCode, district);
     this.getPieData(this.countryCode, district);
-
-    // updating the pie chart
-    //this.updatePie(pieData);
-
-    // updating the bar and line chart
-    //this.updateBarLine(barLineData);
+    this.getBarData(this.countryCode, district);
 }
 
 
@@ -940,9 +983,9 @@ Dashboard.prototype.createLine = function () {
  * Might need to make another set of JSON formatting functions, since this is avg births
  * TODO: should use line chart functions?
  **/
-$(function () {
+Dashboard.prototype.createBar = function () {
 
-    $('#bar').highcharts({
+    return $('#bar').highcharts({
         chart: {
             type: 'column'
         },
@@ -988,24 +1031,6 @@ $(function () {
                 pointPadding: 0.2,
                 borderWidth: 0
             }
-        },
-	// TODO: update to be like series in createPie
-        series: [{
-            name: 'North',
-            data: [49.9, 71.5, 106.4, 129.2, 144.0, 176.0, 135.6, 148.5, 216.4, 194.1, 95.6, 54.4]
-
-        }, {
-            name: 'Easth',
-            data: [83.6, 78.8, 98.5, 93.4, 106.0, 84.5, 105.0, 104.3, 91.2, 83.5, 106.6, 92.3]
-
-        }, {
-            name: 'South',
-            data: [48.9, 38.8, 39.3, 41.4, 47.0, 48.3, 59.0, 59.6, 52.4, 65.2, 59.3, 51.2]
-
-        }, {
-            name: 'West',
-            data: [42.4, 33.2, 34.5, 39.7, 52.6, 75.5, 57.4, 60.4, 47.6, 39.1, 46.8, 51.1]
-
-        }]
+        }
     });
-});
+}
