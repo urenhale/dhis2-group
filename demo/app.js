@@ -622,21 +622,7 @@ $(function () {
     var months = [  "Jan", "Feb", "Mar",
                     "Apr", "May", "Jun",
                     "Jul", "Aug", "Sept",
-                    "Oct", "Nov", "Dec"],
-
-    /**
-     *  Functionality for rounding down to last complete month.
-     *  This makes it so that the slider scale is not assymetrical.
-     *  Waste of time to create but it annoyed me.
-     **/
-    lastFinalMonthDate = (function() {
-
-        var month = new Date().getMonth(),
-        year = (new Date().getYear() + 1900);
-
-        return new Date(year, month, 1);
-
-    })();
+                    "Oct", "Nov", "Dec"];
 
     /**
      *  This is where the rangeslider is created.
@@ -655,9 +641,10 @@ $(function () {
             max: new Date(2015,11, 1)
         },
 
+        // Picking up defeaultValeus from dashboard object
         defaultValues: {
-            min: new Date(2015, 0, 1),
-            max: new Date(2015, 11, 1)
+            min: dashboard.timeMin,
+            max: dashboard.timeMax
         },
 
         scales: [{
@@ -687,10 +674,9 @@ $(function () {
      *  Extracting the date objects and sending them to he updateTime function
      **/
     $("#slider").bind("valuesChanged", function(e, data){
+
         dashboard.updateTime(data.values);
     });
-
-
 
 });
 
@@ -710,6 +696,10 @@ function Dashboard () {
     this.lineData = [];
     this.barData = [];
 
+    // Default values for date
+    this.timeMin = new Date(2015, 5, 1);
+    this.timeMax = new Date(2015, 9, 1);
+
     // Current countryCode (if any);
     this.countryCode = null;
 
@@ -727,12 +717,13 @@ function Dashboard () {
 Dashboard.prototype.updateTime = function (timespan) {
 
     var startMonth = timespan.min.getMonth(),
-    startYear = timespan.min.getYear(),
-    endMonth = timespan.max.getMonth(),
-    endYear = timespan.max.getYear();
+        startYear = timespan.min.getYear(),
+        endMonth = timespan.max.getMonth(),
+        endYear = timespan.max.getYear();
 	
 	startTime = startMonth;
 	endTime = endMonth;
+
 	this.getLineData(this.countryCode);
 	this.getBarData(this.countryCode);
 	this.getPieData(this.countryCode);
@@ -743,8 +734,6 @@ Dashboard.prototype.updateTime = function (timespan) {
 	console.log(startYear);
     console.log("From month nr " + startMonth + " year " + startYear);
     console.log("To month nr " + endMonth + " year " + endYear);
-
-    console.log("sorry lord");
 
 }
 
@@ -865,7 +854,7 @@ Dashboard.prototype.getBarData = function (countryCode, district) {
 	console.log("update district plz");
     }
 
-    //clearing previous lineData
+    //clearing previous barData
     this.barData = [];
 
     // getting and formatting the disease data
@@ -899,23 +888,23 @@ Dashboard.prototype.updateBar = function (data, redraw) {
     
     if (redraw) {
 
-	console.log(this.bar.series.length);
-	console.log(this.barData.length);
+    	console.log(this.bar.series.length);
+    	console.log(this.barData.length);
 
-	// If initializing data for start page
-	if (this.bar.series.length == 0) {
-	    for (i = 0; i < this.barData.length; i++) {
-		this.bar.addSeries(this.barData[i]);
-	    }
-	} else {
-	    //for updating the values/names of barChart, barData should be in correct format from getBarJSON
-	    for (i = 0; i < this.barData.length; i++) {
-		this.bar.series[i].update({name: this.barData[i].name}, false);
-		this.bar.series[i].setData(this.barData[i].data, false);
-	    }
-	}
-	
-	this.bar.redraw();
+    	// If initializing data for start page
+    	if (this.bar.series.length == 0) {
+    	    for (i = 0; i < this.barData.length; i++) {
+    		  this.bar.addSeries(this.barData[i]);
+    	    }
+    	} else {
+    	    //for updating the values/names of barChart, barData should be in correct format from getBarJSON
+    	    for (i = 0; i < this.barData.length; i++) {
+        		this.bar.series[i].update({name: this.barData[i].name}, false);
+        		this.bar.series[i].setData(this.barData[i].data, false);
+    	    }
+    	}
+    	
+    	this.bar.redraw();
     }
 }
 
