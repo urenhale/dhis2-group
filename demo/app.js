@@ -757,18 +757,18 @@ Dashboard.prototype.getPieData = function (countryCode, district) {
 
 /**
  *  updatePie
+ *
+ *  This is a function that essentially decides if the data should be added or redrawn.
  **/
 Dashboard.prototype.updatePie = function (data, redraw) {
 	
-
-	console.log(data);
     this.pieData.push(data);
 
     if (redraw) {
-	// updating this array last, pieData should be in the correct format from getPieJSON!
+	   // updating this array last, pieData should be in the correct format from getPieJSON!
         this.pie.series[0].setData(this.pieData);
 
-//	this.getLineData(this.countryCode);
+        // this.getLineData(this.countryCode);
     }
 }
 
@@ -819,6 +819,7 @@ Dashboard.prototype.updateLine = function (data, redraw) {
 	data['data'] = data['data'].slice(startTime, endTime);
 	this.line.xAxis[0].setCategories(categories.slice(startTime, endTime));
     this.lineData.push(data);
+
     if (redraw) {
 	
 	// If initializing data for start page
@@ -829,8 +830,8 @@ Dashboard.prototype.updateLine = function (data, redraw) {
 	} else {
 	    //for updating the values/names of lineChart, lineData should be in correct format from getLineJSON
 	    for (i = 0; i < this.lineData.length; i++) {
-		this.line.series[i].update({name: this.lineData[i].name}, false);
-		this.line.series[i].setData(this.lineData[i].data, false);
+    		this.line.series[i].update({name: this.lineData[i].name}, false);
+    		this.line.series[i].setData(this.lineData[i].data, false);
 	    }
 	}
 	
@@ -887,9 +888,6 @@ Dashboard.prototype.updateBar = function (data, redraw) {
     this.barData.push(data);
     
     if (redraw) {
-
-    	console.log(this.bar.series.length);
-    	console.log(this.barData.length);
 
     	// If initializing data for start page
     	if (this.bar.series.length == 0) {
