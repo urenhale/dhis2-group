@@ -282,6 +282,16 @@ $(function () {
 	});
     }
 
+    // Switch to previous map                                                                                        
+    $("#prevMap").click(function () {
+    $("#mapDropdown option:selected").prev("option").prop("selected", true).change();
+    });
+
+    // Switch to next map                                                                                        
+    $("#nextMap").click(function () {
+    $("#mapDropdown option:selected").next("option").prop("selected", true).change();
+    });
+
     function changeMap(mapKey, name){
 	console.log("changing map")
 	console.log(Highcharts.maps['mapKey'])
@@ -389,8 +399,30 @@ $(function () {
 
             colorAxis: {
 		min: 0
-            },
+            }, // colorAxis
+             stops: [
+                    [0, '#EFEFFF'],
+                    [0.5, Highcharts.getOptions().colors[0]],
+                    [1, Highcharts.Color(Highcharts.getOptions().colors[0]).brighten(-0.5).get()]]
+                    },
 
+                legend: {
+                    layout: 'vertical',
+                    align: 'left',
+                    verticalAlign: 'bottom'
+                    },
+
+                series: [{
+                    data: data,
+                    mapData: mapGeoJSON,
+                    joinBy: ['hc-key', 'key'],
+                    name: 'Random data',
+                    states: {
+                    hover: {
+                    color: Highcharts.getOptions().colors[2]
+                        }
+        },
+    // Navig
             mapNavigation: {
 		enabled: true,
 		buttonOptions: {
@@ -430,6 +462,7 @@ $(function () {
 		}
             }
 	});
+
 	
 	console.log("HI")
 	console.log(Highcharts.geojson(Highcharts.maps[mapKey]))
