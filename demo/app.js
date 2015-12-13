@@ -6,6 +6,8 @@
 
 // temporary global variable
 var dashboard;
+var startTime = 0;
+var endTime = 11;
 
 $(function () {
 
@@ -704,7 +706,7 @@ function Dashboard () {
 
     //initialize pie, line and bar charts
     this.pie = this.createPie().highcharts();
-    this.line = this.createLine().highcharts();
+    this.line = this.createLine(0, 11).highcharts();
     this.bar = this.createBar().highcharts();
 
     this.pieData = [];
@@ -731,9 +733,14 @@ Dashboard.prototype.updateTime = function (timespan) {
     startYear = timespan.min.getYear(),
     endMonth = timespan.max.getMonth(),
     endYear = timespan.max.getYear();
+	
+	startTime = startMonth;
+	endTime = endMonth;
+	this.getLineData(this.countryCode);
 
 
     console.log("Update the charts to correspond with the following months/years:");
+	console.log(startYear);
     console.log("From month nr " + startMonth + " year " + startYear);
     console.log("To month nr " + endMonth + " year " + endYear);
 
@@ -805,9 +812,27 @@ Dashboard.prototype.getLineData = function (countryCode, district) {
  *  updateLine
  **/
 Dashboard.prototype.updateLine = function (data, redraw) {
+	var  categories = [
+                'Jan',
+                'Feb',
+                'Mar',
+                'Apr',
+                'May',
+                'Jun',
+                'Jul',
+                'Aug',
+                'Sep',
+                'Oct',
+                'Nov',
+                'Dec'
+            ];
     
+	console.log("start: " + startTime);
+	console.log("end: " + endTime);
+	console.log(data);
+	data['data'] = data['data'].slice(startTime, endTime);
+	this.line.xAxis[0].setCategories(categories.slice(startTime, endTime));
     this.lineData.push(data);
-    
     if (redraw) {
 	
 	// If initializing data for start page
@@ -824,8 +849,6 @@ Dashboard.prototype.updateLine = function (data, redraw) {
 	}
 	
 	this.line.redraw();
-	
-//	this.getBarData(this.countryCode);
     }
 }
 
@@ -952,6 +975,8 @@ Dashboard.prototype.createPie = function () {
  *
  **/
 Dashboard.prototype.createLine = function () {
+
+	
 
     return $('#line').highcharts({
         title: {
