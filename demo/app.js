@@ -399,31 +399,9 @@ $(function () {
 
             colorAxis: {
 		min: 0
-            }, // colorAxis
-             stops: [
-                    [0, '#EFEFFF'],
-                    [0.5, Highcharts.getOptions().colors[0]],
-                    [1, Highcharts.Color(Highcharts.getOptions().colors[0]).brighten(-0.5).get()]]
-                    },
+            }, 
 
-                legend: {
-                    layout: 'vertical',
-                    align: 'left',
-                    verticalAlign: 'bottom'
-                    },
-
-                series: [{
-                    data: data,
-                    mapData: mapGeoJSON,
-                    joinBy: ['hc-key', 'key'],
-                    name: 'Random data',
-                    states: {
-                    hover: {
-                    color: Highcharts.getOptions().colors[2]
-                        }
-        },
-    // Navig
-            mapNavigation: {
+        mapNavigation: {
 		enabled: true,
 		buttonOptions: {
                     verticalAlign: 'bottom'
