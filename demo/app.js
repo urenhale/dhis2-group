@@ -258,9 +258,10 @@ $(function () {
 	$.each(Highcharts.maps, function (mapGroup, maps) {
 		$.each(maps['features'], function(){
 			mapOptions += '<option value=' + this['properties']['hc-key'] +'>' + this['properties']['name'] + '</option>';
-		})
+        })
     });
-	$("#mapDropdown").append(mapOptions);
+
+    $("#mapDropdown").append(mapOptions);
 	
 	$("#mapDropdown").change(function () {
         var $selectedItem = $("option:selected", this)
@@ -347,8 +348,6 @@ $(function () {
                                     enabled: true,
                                     format: '{point.name}'
                                 }
-                            
-							
 							});
                         });
 			
@@ -730,7 +729,7 @@ Dashboard.prototype.updateTime = function (timespan) {
     console.log("From month nr " + startMonth + " year " + startYear);
     console.log("To month nr " + endMonth + " year " + endYear);
 
-    console.log("sorry lord");
+   // console.log("sorry lord");
 
 }
 
