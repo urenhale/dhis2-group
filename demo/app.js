@@ -1,12 +1,22 @@
+/**************************
+ *
+ * LICENCED SOFTWARE:
+ * - jQuery - https://jquery.org/license/
+ * - https://github.com/ghusse/jQRangeSlider
+ * - http://shop.highsoft.com/highcharts.html
+ * - http://shop.highsoft.com/highmaps.html
+ *
+***************************/
+
+
+// temporary global variable
+var dashboard;
+
 /**
  * Shorthand function for $(document).ready().
  *
  * Function is invoked once document is marked as ready by browser.
  **/
-
-// temporary global variable
-var dashboard;
-
 $(function () {
 
     dashboard = new Dashboard();
@@ -743,6 +753,12 @@ Dashboard.prototype.updateTime = function (timespan) {
  **/
 Dashboard.prototype.getPieData = function (countryCode, district) {
 
+    // Functionality added for demo data
+    if (countryCode != 'sl') {
+        return;
+    }
+
+
     if (district != null) {
         console.log("update district");
     }
@@ -783,6 +799,11 @@ Dashboard.prototype.updatePie = function (data, redraw) {
  * Should get JSON from the DHIS2 API, but we haven't done that yet.
  **/
 Dashboard.prototype.getLineData = function (countryCode, district) {
+
+    // Functionality added for demo data
+    if (countryCode != 'sl') {
+        return;
+    }
 
     if (district != null) {
 	   console.log("update district plz");
@@ -849,6 +870,12 @@ Dashboard.prototype.updateLine = function (data, redraw) {
  * Should get JSON from the DHIS2 API, but we haven't done that yet.
  **/
 Dashboard.prototype.getBarData = function (countryCode, district) {
+
+    // Functionality added for demo data
+    if (countryCode != 'sl') {
+        return;
+    }
+
 
     if (district != null) {
 	console.log("update district plz");
